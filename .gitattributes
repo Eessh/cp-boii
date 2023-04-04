@@ -1,5 +1,6 @@
 * linguist-vendored
-*.c linguist-vendored=false
+log-boii/*.c linguist-vendored=false
+memsafe-boii/*.c linguist-vendored=false
 *.cpp linguist-vendored=false
 *.hpp linguist-vendored=false
 *.lua linguist-vendored=false
