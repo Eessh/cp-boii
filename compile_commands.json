@@ -1,0 +1,97 @@
+[
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/log-boii/log_boii.c",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/log_boii.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/log_boii.d -c C:/Users/eessh/Documents/projects/cp-boii/log-boii/log_boii.c"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/memsafe-boii/memsafe_boii.c",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/memsafe_boii.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/memsafe_boii.d -c C:/Users/eessh/Documents/projects/cp-boii/memsafe-boii/memsafe_boii.c"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/base_widget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/base_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/base_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/base_widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/file_content_viewer.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/file_content_viewer.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/file_content_viewer.d -c C:/Users/eessh/Documents/projects/cp-boii/src/file_content_viewer.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/font_manager.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/font_manager.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/font_manager.d -c C:/Users/eessh/Documents/projects/cp-boii/src/font_manager.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/global_state.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/global_state.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/global_state.d -c C:/Users/eessh/Documents/projects/cp-boii/src/global_state.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/renderer.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/renderer.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/renderer.d -c C:/Users/eessh/Documents/projects/cp-boii/src/renderer.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/singleton_renderer.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/singleton_renderer.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/singleton_renderer.d -c C:/Users/eessh/Documents/projects/cp-boii/src/singleton_renderer.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/string_widget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/string_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/string_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/string_widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/texture.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/texture.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/texture.d -c C:/Users/eessh/Documents/projects/cp-boii/src/texture.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/texture_manager.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/texture_manager.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/texture_manager.d -c C:/Users/eessh/Documents/projects/cp-boii/src/texture_manager.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/textwidget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/textwidget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/textwidget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/textwidget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/vertical_view_widget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/vertical_view_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/vertical_view_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/vertical_view_widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/widget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/window.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/window.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/window.d -c C:/Users/eessh/Documents/projects/cp-boii/src/window.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs/tinyfiledialogs.c",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/tinyfiledialogs.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/tinyfiledialogs.d -c C:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs/tinyfiledialogs.c"
+          }
+]
