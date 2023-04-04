@@ -12,6 +12,7 @@ Window::Window(const std::string& title,
   , _height(height)
   , _flags(flags)
 {
+  log_info("Creating window...");
   _window = SDL_CreateWindow(_title.c_str(), _x, _y, _width, _height, _flags);
   if(!_window)
   {
@@ -29,6 +30,7 @@ Window::Window(const std::string& title,
                Uint32 flags)
   : _title(title), _x(x), _y(y), _width(width), _height(height), _flags(flags)
 {
+  log_info("Creating window...");
   _window = SDL_CreateWindow(_title.c_str(), _x, _y, _width, _height, _flags);
   if(!_window)
   {

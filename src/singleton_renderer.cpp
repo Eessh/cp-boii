@@ -8,6 +8,7 @@ SingletonRenderer::SingletonRenderer(const Window& window,
                                      Uint32 flags)
   : _driver_index(driver_index), _flags(flags)
 {
+  log_info("Creating SingletonRenderer...");
   _renderer = SDL_CreateRenderer(window._window, _driver_index, _flags);
   if(!_renderer)
   {
@@ -18,7 +19,7 @@ SingletonRenderer::SingletonRenderer(const Window& window,
 
 SingletonRenderer::~SingletonRenderer()
 {
-  log_info("Freeing up resources used by renderer...");
+  log_info("Freeing up resources used by SingletonRenderer...");
   SDL_DestroyRenderer(this->_renderer);
 }
 
@@ -28,13 +29,18 @@ void SingletonRenderer::create_instance(const Window& window,
 {
   if(_instance != nullptr)
   {
+    log_trace("SingletonRenderer already exists, use SingletonRenderer::get_instance()");
     return;
   }
-  _instance = new SingletonRenderer(window, driver_index, flags);
+  else {
+    log_info("Creating SingletonRenderer instance...");
+    _instance = new SingletonRenderer(window, driver_index, flags);
+  }
 }
 
 void SingletonRenderer::delete_instance()
 {
+  log_info("Deleting SingletonRenderer instance");
   delete _instance;
 }
 

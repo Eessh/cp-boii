@@ -8,10 +8,12 @@ FontManager::FontManager() {}
 FontManager::~FontManager()
 {
   // clearing up fonts memory
+  log_trace("Clearing up fonts memory...");
   for(auto& p : _font_map)
   {
     TTF_CloseFont(p.second);
   }
+  log_info("Quitting SDL_TTF extension...");
   TTF_Quit();
 }
 
@@ -19,16 +21,19 @@ void FontManager::create_instance()
 {
   if(_instance != nullptr)
   {
+    log_trace("Font Manager already exists, use FontManager::get_instance()");
     return;
   }
   else
   {
+    log_info("Creating Font Manager...");
     _instance = new FontManager();
   }
 }
 
 void FontManager::delete_instance()
 {
+  log_info("Deleting Font Manager instance...");
   delete _instance;
 }
 
@@ -39,6 +44,7 @@ FontManager* FontManager::get_instance()
 
 void FontManager::initialize()
 {
+  log_trace("Initializing SDL_TTF extension...");
   if(TTF_Init() != 0)
   {
     log_fatal("Error while initializing TTF extension: %s", TTF_GetError());
@@ -49,8 +55,10 @@ void FontManager::initialize()
 
 void FontManager::load_default_font(unsigned int font_size)
 {
+  log_info("Loading default font: ../../assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf...");
   TTF_Font* default_font =
-    TTF_OpenFont("C:/Windows/Fonts/consola.ttf", font_size);
+    // TTF_OpenFont("C:/Windows/Fonts/consola.ttf", font_size);
+    TTF_OpenFont("../../assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf", font_size);
   if(!default_font)
   {
     log_fatal("Error while loading default font: %s", TTF_GetError());
@@ -75,6 +83,7 @@ void FontManager::load_font(const std::string& font_file_path,
                             unsigned int font_size,
                             const std::string& font_name_to_assign)
 {
+  log_info("Loading font: %s", font_file_path.c_str());
   TTF_Font* font = TTF_OpenFont(font_file_path.c_str(), font_size);
   if(!font)
   {

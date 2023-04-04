@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
   FontManager::create_instance();
   FontManager::get_instance()->initialize();
-  FontManager::get_instance()->load_default_font(18);
+  FontManager::get_instance()->load_default_font(14);
 
   WindowConfig config("File Content Viewer",
                       1080,
