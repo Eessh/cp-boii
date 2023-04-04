@@ -2,7 +2,11 @@
 A super simple, very lightweight, easy to configure code editor.
 
 ### Current Status
-Made a simple file viewer with the custom made widgets in SDL2.
+Made a simple File Viewer with the custom made widgets in SDL2.
+
+Have attached the screenshot of File Viewer viewing it's source code.
+
+![File Viewer](./screenshots/file_viewer.png)
 
 ### Building
 ```powershell
