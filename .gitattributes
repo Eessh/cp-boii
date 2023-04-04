@@ -1,2 +1,6 @@
-SDL2/* linguist-vendored
-SDL2_ttf/* linguist-vendored
+* linguist-vendored
+*.c linguist-vendored=false
+*.cpp linguist-vendored=false
+*.hpp linguist-vendored=false
+*.lua linguist-vendored=false
+*.json linguist-vendored=false
