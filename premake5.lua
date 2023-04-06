@@ -31,7 +31,7 @@ workspace("cp-boii")
 			"log-boii/log_boii.c",
 			"tinyfiledialogs/tinyfiledialogs.c",
 		})
-		removefiles { "src/main.cpp" }
+		removefiles { "src/main.cpp","src/file_content_viewer.cpp" }
 		filter({ "system:windows" })
 			links({
 				"SDL2main",

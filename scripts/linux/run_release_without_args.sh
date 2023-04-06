@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./bin/Release/MarkdownViewer
+./bin/Release/cp-boii

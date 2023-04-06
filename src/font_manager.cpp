@@ -59,7 +59,7 @@ void FontManager::load_default_font(unsigned int font_size)
            "../../assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf...");
   TTF_Font* default_font =
     // TTF_OpenFont("C:/Windows/Fonts/consola.ttf", font_size);
-    TTF_OpenFont("../../assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf",
+    TTF_OpenFont("assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf",
                  font_size);
   if(!default_font)
   {

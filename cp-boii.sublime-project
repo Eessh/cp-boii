@@ -8,8 +8,8 @@
 	],
 	"settings": {
 		"tab_size": 2,
-		"font_face": "Fantasque Sans Mono",
-		"font_size": 13,
+		"font_face": "JetBrainsMono NF",
+		"font_size": 12,
 		"caret_extra_top": 3,
 		"caret_extra_bottom": 5,
 		"caret_extra_width": 1,
@@ -77,7 +77,7 @@
 						"shell_cmd": "./bin/Debug/MarkdownParser__Header"
 					},
 					"linux": {
-						"shell_cmd": "./bin/Debug/MarkdownParser__Header"
+						"shell_cmd": "./bin/Debug/cp-boii src/file_content_viewer.cpp"
 					}
 				},
 				{
@@ -89,7 +89,7 @@
 						"shell_cmd": "./bin/Release/MarkdownParser__Header"
 					},
 					"linux": {
-						"shell_cmd": "./bin/Release/MarkdownParser__Header"
+						"shell_cmd": "./scripts/linux/run_release.sh"
 					}
 				},
 				// {

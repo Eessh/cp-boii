@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo Cleaning executables ...
-rm ./bin/Debug/** > /dev/null 2>&1
-rm ./bin/Release/** > /dev/null 2>&1
+rm ./bin/Debug/cp-boii > /dev/null 2>&1
+rm ./bin/Release/cp-boii > /dev/null 2>&1
 
 echo Cleaning object files ...
 rm ./obj/Debug/** > /dev/null 2>&1

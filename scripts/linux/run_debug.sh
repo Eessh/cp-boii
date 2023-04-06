@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./bin/Debug/MarkdownViewer tests/test.md
+./bin/Debug/cp-boii src/file_content_viewer.cpp

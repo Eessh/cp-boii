@@ -6,11 +6,11 @@
 #include "../SDL2/include/SDL.h"
 #include "../SDL2_ttf/include/SDL_ttf.h"
 
-class AlphaTexture
+class DimensionedTexture
 {
 public:
-  AlphaTexture();
-  ~AlphaTexture();
+  DimensionedTexture();
+  ~DimensionedTexture();
 
   bool init(SDL_Surface* char_surface);
 
@@ -43,13 +43,14 @@ public:
   SDL_Texture* get_alphabet_char_texture(const char& alphabet);
   SDL_Texture* get_colored_alphabet_char_texture(const char& alphabet,
                                                  const SDL_Color& color);
+  SDL_Texture* get_colored_string_texture(const std::string& str, const SDL_Color& color);
   std::pair<const unsigned int&, const unsigned int&>
   get_alphabet_char_texture_dimensions(const char& alphabet);
 
   // TODO: Media texture loaders
 
 private:
-  std::unordered_map<char, AlphaTexture*> _alphabet_texture_map;
+  std::unordered_map<char, DimensionedTexture*> _alphabet_texture_map;
 
   // Constructors
   TextureManager();

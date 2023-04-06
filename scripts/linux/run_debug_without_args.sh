@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./bin/Debug/MarkdownViewer
+./bin/Debug/cp-boii

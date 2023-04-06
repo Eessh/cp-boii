@@ -1,4 +1,5 @@
 #include "../include/texture_manager.hpp"
+#include <SDL2/SDL_render.h>
 #include "../include/font_manager.hpp"
 #include "../include/singleton_renderer.hpp"
 #include "../log-boii/log_boii.h"
@@ -55,7 +56,7 @@ void TextureManager::load_alphabet_char_textures()
       continue;
       // TODO: handle dis
     }
-    AlphaTexture* alpha_texture = new AlphaTexture();
+    DimensionedTexture* alpha_texture = new DimensionedTexture();
     if(!alpha_texture->init(char_surface))
     {
       log_error("Error while creating texture from surface for char '%c': %s",
@@ -109,11 +110,30 @@ TextureManager::get_colored_alphabet_char_texture(const char& alphabet,
               alphabet,
               TTF_GetError());
     // TODO: handle dis
+    return nullptr;
   }
   SDL_Texture* char_texture = SDL_CreateTextureFromSurface(
     SingletonRenderer::get_instance()->renderer(), char_surface);
   SDL_FreeSurface(char_surface);
   return char_texture;
+}
+
+SDL_Texture* TextureManager::get_colored_string_texture(const std::string& str, const SDL_Color& color) {
+  SDL_Surface* text_surface = TTF_RenderUTF8_Blended(FontManager::get_instance()->get_default_font(), str.c_str(), color);
+  if (!text_surface) {
+    log_error("Unable to create colored text surface for text: %s, error: %s", str.c_str(), TTF_GetError());
+    // TODO: handle dis
+    return nullptr;
+  }
+  SDL_Texture* text_texture = SDL_CreateTextureFromSurface(SingletonRenderer::get_instance()->renderer(), text_surface);
+  if(!text_texture)
+  {
+    log_error("Unable to create colored text texture from surface for text: %s, error: %s", str.c_str(), SDL_GetError());
+    SDL_FreeSurface(text_surface);
+    // TODO: handle dis
+  }
+  SDL_FreeSurface(text_surface);
+  return text_texture;
 }
 
 std::pair<const unsigned int&, const unsigned int&>
@@ -132,14 +152,14 @@ TextureManager::get_alphabet_char_texture_dimensions(const char& alphabet)
 }
 
 // AlphaTexture
-AlphaTexture::AlphaTexture() : _texture(nullptr) {}
+DimensionedTexture::DimensionedTexture() : _texture(nullptr) {}
 
-AlphaTexture::~AlphaTexture()
+DimensionedTexture::~DimensionedTexture()
 {
   SDL_DestroyTexture(_texture);
 }
 
-bool AlphaTexture::init(SDL_Surface* char_surface)
+bool DimensionedTexture::init(SDL_Surface* char_surface)
 {
   _width = char_surface->w;
   _height = char_surface->h;
@@ -155,17 +175,17 @@ bool AlphaTexture::init(SDL_Surface* char_surface)
   return true;
 }
 
-const unsigned int& AlphaTexture::width() const
+const unsigned int& DimensionedTexture::width() const
 {
   return _width;
 }
 
-const unsigned int& AlphaTexture::height() const
+const unsigned int& DimensionedTexture::height() const
 {
   return _height;
 }
 
-SDL_Texture* AlphaTexture::texture()
+SDL_Texture* DimensionedTexture::texture()
 {
   return _texture;
 }
