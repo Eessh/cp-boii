@@ -34,9 +34,11 @@ public:
   // Children methods
   void add_child(BaseWidget* child);
   void remove_child(BaseWidget* child);
+  void remove_all_children();
 
   // Processors
-  virtual void process_event(const SDL_Event& event) = 0;
+  virtual void process_sdl_event(const SDL_Event& event) = 0;
+  // virtual void process_animation_event() = 0;
 
   // Render
   virtual void render() const = 0;

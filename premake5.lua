@@ -26,7 +26,7 @@ workspace("cp-boii")
 			"C:/msys64/mingw32/include",
 		})
 		files({
-			"src/*.cpp",
+			"src/**.cpp",
 			"memsafe-boii/memsafe_boii.c",
 			"log-boii/log_boii.c",
 			"tinyfiledialogs/tinyfiledialogs.c",

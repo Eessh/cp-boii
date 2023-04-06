@@ -41,6 +41,8 @@ public:
 
   void load_alphabet_char_textures();
   SDL_Texture* get_alphabet_char_texture(const char& alphabet);
+  SDL_Texture* get_colored_alphabet_char_texture(const char& alphabet,
+                                                 const SDL_Color& color);
   std::pair<const unsigned int&, const unsigned int&>
   get_alphabet_char_texture_dimensions(const char& alphabet);
 

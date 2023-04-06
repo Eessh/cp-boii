@@ -19,7 +19,7 @@ public:
   // Setters
   std::string& text();
 
-  void process_event(const SDL_Event& event);
+  void process_sdl_event(const SDL_Event& event);
 
   void render() const;
 

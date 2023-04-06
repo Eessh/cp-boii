@@ -28,7 +28,7 @@ public:
   // void remove_child(BaseWidget* child);
 
   // Processors
-  void process_event(const SDL_Event& event);
+  void process_sdl_event(const SDL_Event& event);
 
   // Render
   void render() const;
@@ -50,7 +50,7 @@ private:
   int _scroll_offset_y_prev;
 
   // Utility functions
-  bool point_lies_inside(unsigned int x, unsigned int y) const;
+  bool point_lies_inside(Sint32 x, Sint32 y) const;
 };
 
 #endif

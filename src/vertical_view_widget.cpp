@@ -9,7 +9,7 @@ VerticalViewWidget::VerticalViewWidget()
 
 VerticalViewWidget::~VerticalViewWidget() {}
 
-void VerticalViewWidget::process_event(const SDL_Event& event)
+void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
 {
   switch(event.type)
   {
@@ -33,6 +33,7 @@ void VerticalViewWidget::process_event(const SDL_Event& event)
     break;
   }
   case SDL_MOUSEWHEEL: {
+    // log_info("some event x, y = %d, %d", event.wheel.mouseX, event.wheel.mouseY);
     if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
     {
       return;
@@ -45,7 +46,9 @@ void VerticalViewWidget::process_event(const SDL_Event& event)
       {
         _scroll_offset_y = 0;
       }
-      // log_debug("Scroll down, offset = %d, preciseY: %f", _scroll_offset_y, event.wheel.preciseX);
+      log_debug("Scroll down, offset = %d, preciseY: %f",
+                _scroll_offset_y,
+                event.wheel.preciseX);
     }
     if(event.wheel.y < 0)
     {
@@ -61,7 +64,9 @@ void VerticalViewWidget::process_event(const SDL_Event& event)
       {
         _scroll_offset_y = -children_height;
       }
-      // log_debug("Scroll up, offset = %d, preciseY: %f", _scroll_offset_y, event.wheel.preciseX);
+      log_debug("Scroll up, offset = %d, preciseY: %f",
+                _scroll_offset_y,
+                event.wheel.preciseX);
     }
     if(event.wheel.x > 0)
     {
@@ -108,6 +113,7 @@ void VerticalViewWidget::process_event(const SDL_Event& event)
     {
       return;
     }
+    log_info("Multigesture event :)");
     // TODO: handle scrolling using multigestures
     // for more cheeewesey butttery scrolling
     if(event.mgesture.numFingers == 2)
@@ -157,7 +163,7 @@ void VerticalViewWidget::process_event(const SDL_Event& event)
   }
   for(BaseWidget* child : this->_children)
   {
-    child->process_event(event);
+    child->process_sdl_event(event);
   }
 }
 
@@ -237,8 +243,10 @@ void VerticalViewWidget::render() const
   SingletonRenderer::get_instance()->set_draw_color({0, 0, 0, 0});
 }
 
-bool VerticalViewWidget::point_lies_inside(unsigned int x, unsigned int y) const
+bool VerticalViewWidget::point_lies_inside(Sint32 x, Sint32 y) const
 {
-  return this->_x <= x && x <= this->_x + 2 * _padding_x + this->_width &&
-         this->_y <= y && y <= this->_y + 2 * _padding_y + this->_height;
+  return (Sint32)this->_x <= x &&
+         x <= (Sint32)(this->_x + 2 * _padding_x + this->_width) &&
+         (Sint32)this->_y <= y &&
+         y <= (Sint32)(this->_y + 2 * _padding_y + this->_height);
 }

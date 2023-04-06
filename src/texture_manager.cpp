@@ -97,6 +97,25 @@ SDL_Texture* TextureManager::get_alphabet_char_texture(const char& alphabet)
   return (*aplhabet_texture_map_iterator).second->texture();
 }
 
+SDL_Texture*
+TextureManager::get_colored_alphabet_char_texture(const char& alphabet,
+                                                  const SDL_Color& color)
+{
+  SDL_Surface* char_surface = TTF_RenderGlyph32_Blended(
+    FontManager::get_instance()->get_default_font(), alphabet, color);
+  if(!char_surface)
+  {
+    log_error("Error while creating surface for character '%c': %s",
+              alphabet,
+              TTF_GetError());
+    // TODO: handle dis
+  }
+  SDL_Texture* char_texture = SDL_CreateTextureFromSurface(
+    SingletonRenderer::get_instance()->renderer(), char_surface);
+  SDL_FreeSurface(char_surface);
+  return char_texture;
+}
+
 std::pair<const unsigned int&, const unsigned int&>
 TextureManager::get_alphabet_char_texture_dimensions(const char& alphabet)
 {

@@ -29,10 +29,12 @@ void SingletonRenderer::create_instance(const Window& window,
 {
   if(_instance != nullptr)
   {
-    log_trace("SingletonRenderer already exists, use SingletonRenderer::get_instance()");
+    log_trace("SingletonRenderer already exists, use "
+              "SingletonRenderer::get_instance()");
     return;
   }
-  else {
+  else
+  {
     log_info("Creating SingletonRenderer instance...");
     _instance = new SingletonRenderer(window, driver_index, flags);
   }

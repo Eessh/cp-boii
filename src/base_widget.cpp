@@ -88,4 +88,15 @@ void BaseWidget::add_child(BaseWidget* child)
 void BaseWidget::remove_child(BaseWidget* child)
 {
   std::remove(_children.begin(), _children.end(), child);
+  delete child;
+}
+
+void BaseWidget::remove_all_children()
+{
+  while(!_children.empty())
+  {
+    BaseWidget* child = _children.back();
+    _children.pop_back();
+    delete child;
+  }
 }

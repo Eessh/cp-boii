@@ -48,7 +48,7 @@ std::string& StringWidget::text()
   return _text;
 }
 
-void StringWidget::process_event(const SDL_Event& event)
+void StringWidget::process_sdl_event(const SDL_Event& event)
 {
   switch(event.type)
   {
@@ -73,7 +73,6 @@ void StringWidget::process_event(const SDL_Event& event)
 
 void StringWidget::render() const
 {
-  SingletonRenderer::get_instance()->set_draw_color(this->_foreground_color);
   int painter_x = this->_x, painter_y = this->_y;
   for(const char& c : _text)
   {
@@ -83,10 +82,14 @@ void StringWidget::render() const
                                    painter_y,
                                    static_cast<int>(char_dimensions.first),
                                    static_cast<int>(char_dimensions.second)};
+    SDL_Texture* char_texture =
+      TextureManager::get_instance()->get_colored_alphabet_char_texture(
+        c, this->_foreground_color);
     SDL_RenderCopy(SingletonRenderer::get_instance()->renderer(),
-                   TextureManager::get_instance()->get_alphabet_char_texture(c),
+                   char_texture,
                    nullptr,
                    &char_destination_rect);
+    SDL_DestroyTexture(char_texture);
     painter_x += char_dimensions.first;
   }
   // SDL_Rect destination_rect{

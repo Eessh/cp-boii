@@ -8,6 +8,7 @@
 #include "../include/global_state.hpp"
 #include "../include/singleton_renderer.hpp"
 #include "../include/string_widget.hpp"
+#include "../include/text_buffers/vector_buffer/vector_buffer.hpp"
 #include "../include/texture_manager.hpp"
 #include "../include/vertical_view_widget.hpp"
 #include "../include/window.hpp"
@@ -33,7 +34,7 @@ int main(int argc, char** argv)
 
   FontManager::create_instance();
   FontManager::get_instance()->initialize();
-  FontManager::get_instance()->load_default_font(14);
+  FontManager::get_instance()->load_default_font(16);
 
   WindowConfig config("File Content Viewer",
                       1080,
@@ -53,15 +54,17 @@ int main(int argc, char** argv)
   std::string file_path(argv[1]);
   std::vector<std::string>* contents = read_file(file_path);
 
+  VectorBuffer buffer(*contents);
+
   VerticalViewWidget widget;
   widget.x() = 0;
   widget.y() = 0;
   widget.width() = 1080;
   widget.height() = 720;
-  for(const std::string& line : *contents)
-  {
-    widget.add_child(new StringWidget(line));
-  }
+  // for(const std::string& line : *contents)
+  // {
+  //   widget.add_child(new StringWidget(line));
+  // }
 
   // Freeing memory occupied by file contents
   delete contents;
@@ -80,13 +83,38 @@ int main(int argc, char** argv)
         running = false;
         continue;
       }
-      widget.process_event(event);
+      if(event.type == SDL_KEYDOWN)
+      {
+        if(event.key.keysym.sym == SDLK_UP)
+        {
+          buffer.execute_command(Command::MOVE_CURSOR_UP);
+        }
+        else if(event.key.keysym.sym == SDLK_DOWN)
+        {
+          buffer.execute_command(Command::MOVE_CURSOR_DOWN);
+        }
+      }
+      widget.process_sdl_event(event);
     }
 
     // GlobalState::get_instance()->update_time();
 
     SingletonRenderer::get_instance()->clear();
+
+    widget.remove_all_children();
+    std::vector<std::string> text_buffer = buffer.get_buffer();
+    std::pair<int, int> cursor_coords = buffer.get_cursor_coords();
+    for(int i = 0; i < text_buffer.size(); i++)
+    {
+      StringWidget* swidget = new StringWidget(text_buffer[i]);
+      if(i == cursor_coords.first)
+      {
+        swidget->foreground_color() = {0, 255, 0, 255};
+      }
+      widget.add_child(swidget);
+    }
     widget.render();
+
     SingletonRenderer::get_instance()->present();
   }
 

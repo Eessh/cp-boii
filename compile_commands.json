@@ -13,8 +13,20 @@
 ,
           {
             "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/animation_event.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/animation_event.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/animation_event.d -c C:/Users/eessh/Documents/projects/cp-boii/src/animation_event.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
             "file": "C:/Users/eessh/Documents/projects/cp-boii/src/base_widget.cpp",
             "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/base_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/base_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/base_widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/cursor_widget.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/cursor_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/cursor_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/cursor_widget.cpp"
           }
 ,
           {
@@ -51,6 +63,12 @@
             "directory": "C:/Users/eessh/Documents/projects/cp-boii",
             "file": "C:/Users/eessh/Documents/projects/cp-boii/src/string_widget.cpp",
             "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/string_widget.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/string_widget.d -c C:/Users/eessh/Documents/projects/cp-boii/src/string_widget.cpp"
+          }
+,
+          {
+            "directory": "C:/Users/eessh/Documents/projects/cp-boii",
+            "file": "C:/Users/eessh/Documents/projects/cp-boii/src/text_buffers/vector_buffer/vector_buffer.cpp",
+            "command": "cc -MD -MP -DDEBUG -IC:/Users/eessh/Documents/projects/cp-boii/include -IC:/Users/eessh/Documents/projects/cp-boii/memsafe-boii -IC:/Users/eessh/Documents/projects/cp-boii/log-boii -IC:/Users/eessh/Documents/projects/cp-boii/SDL2/include -IC:/Users/eessh/Documents/projects/cp-boii/SDL2_ttf/include -IC:/Users/eessh/Documents/projects/cp-boii/tinyfiledialogs -IC:/msys64/mingw64/include -IC:/msys64/mingw32/include -g -o C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/vector_buffer.o -MF C:/Users/eessh/Documents/projects/cp-boii/obj/Debug/vector_buffer.d -c C:/Users/eessh/Documents/projects/cp-boii/src/text_buffers/vector_buffer/vector_buffer.cpp"
           }
 ,
           {
