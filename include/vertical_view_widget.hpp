@@ -10,13 +10,13 @@ class VerticalViewWidget : public BaseWidget
 public:
   VerticalViewWidget();
 
-  ~VerticalViewWidget();
+  ~VerticalViewWidget() = default;
 
   // Getters
-  const unsigned int& padding_x() const;
-  const unsigned int& padding_y() const;
-  const int& scroll_offset_x() const;
-  const int& scroll_offset_y() const;
+  [[nodiscard]] const unsigned int& padding_x() const;
+  [[nodiscard]] const unsigned int& padding_y() const;
+  [[nodiscard]] const int& scroll_offset_x() const;
+  [[nodiscard]] const int& scroll_offset_y() const;
 
   // Setters
   unsigned int& padding_x();

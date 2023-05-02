@@ -22,8 +22,8 @@ public:
   ~Renderer();
 
   // Getters
-  int rendering_driver_index() const;
-  Uint32 flags() const;
+  [[nodiscard]] int rendering_driver_index() const;
+  [[nodiscard]] Uint32 flags() const;
 
   // Setters
   void set_draw_color(Uint32 r, Uint32 g, Uint32 b, Uint32 a) const;
@@ -37,7 +37,7 @@ public:
   void present() const;
 
   // Status check
-  bool ok() const;
+  [[nodiscard]] bool ok() const;
 
 private:
   int _rendering_driver_index;

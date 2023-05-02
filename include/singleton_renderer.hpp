@@ -25,13 +25,13 @@ public:
 
   static SingletonRenderer* get_instance();
 
-  // Meida loaders
+  // Media loaders
   void load_default_font();
   void load_font(const std::string& font_file_path);
 
   // Getters
-  const int& driver_index() const;
-  const Uint32& flags() const;
+  [[nodiscard]] const int& driver_index() const;
+  [[nodiscard]] const Uint32& flags() const;
 
   // Setters
   int& driver_index();
@@ -49,7 +49,7 @@ public:
   void remove_clip_rect() const;
 
   // Status check
-  bool ok() const;
+  [[nodiscard]] bool ok() const;
 
   // Clear & Present
   void clear() const;

@@ -15,7 +15,7 @@ class Renderer;
 class TextWidget
 {
 public:
-  TextWidget(const std::string& text);
+  explicit TextWidget(const std::string& text);
   TextWidget(const std::string& text,
              const SDL_Color& foreground_color,
              const SDL_Color& background_color);
@@ -23,13 +23,13 @@ public:
   TextWidget(TextWidget& text_widget);
 
   // Getters
-  const unsigned int& x() const;
-  const unsigned int& y() const;
-  const unsigned int& width() const;
-  const unsigned int& height() const;
-  const std::string& text() const;
-  const SDL_Color& foreground_color() const;
-  const SDL_Color& background_color() const;
+  [[nodiscard]] const unsigned int& x() const;
+  [[nodiscard]] const unsigned int& y() const;
+  [[nodiscard]] const unsigned int& width() const;
+  [[nodiscard]] const unsigned int& height() const;
+  [[nodiscard]] const std::string& text() const;
+  [[nodiscard]] const SDL_Color& foreground_color() const;
+  [[nodiscard]] const SDL_Color& background_color() const;
 
   // Setters
   unsigned int& x();

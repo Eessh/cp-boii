@@ -9,12 +9,12 @@
 class StringWidget : public BaseWidget
 {
 public:
-  StringWidget(const std::string& text);
+  explicit StringWidget(const std::string& text);
 
   ~StringWidget();
 
   // Getters
-  const std::string& text() const;
+  [[nodiscard]] const std::string& text() const;
 
   // Setters
   std::string& text();

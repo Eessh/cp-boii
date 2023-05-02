@@ -1,7 +1,7 @@
 #include "../include/line_widget.hpp"
 
 LineWidget::LineWidget(const std::string& text)
-: _background_rect_widget(nullptr), _text_widget(nullptr)
+  : _background_rect_widget(nullptr), _text_widget(nullptr)
 {
   _background_rect_widget = new RectangleWidget();
   _text_widget = new TokenizableTextWidget(text);
@@ -9,20 +9,24 @@ LineWidget::LineWidget(const std::string& text)
   this->_height = _text_widget->height();
 }
 
-LineWidget::~LineWidget() {
+LineWidget::~LineWidget()
+{
   delete _background_rect_widget;
   delete _text_widget;
 }
 
-const std::string& LineWidget::text() const {
+const std::string& LineWidget::text() const
+{
   return _text_widget->text();
 }
 
-std::string& LineWidget::text() {
+std::string& LineWidget::text()
+{
   return _text_widget->text();
 }
 
-void LineWidget::render() const {
+void LineWidget::render() const
+{
   // setting dimensions
   _background_rect_widget->x() = this->_x;
   _background_rect_widget->y() = this->_y;

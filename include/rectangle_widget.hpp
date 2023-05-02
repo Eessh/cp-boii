@@ -5,18 +5,20 @@
 
 #include "base_widget.hpp"
 
-typedef enum class RectangleStyle {
+typedef enum class RectangleStyle
+{
   FILLED,
   OUTLINED
 } RectangleStyle;
 
-class RectangleWidget: public BaseWidget {
+class RectangleWidget : public BaseWidget
+{
 public:
   RectangleWidget();
   ~RectangleWidget();
 
   // Getters
-  const RectangleStyle& style() const;
+  [[nodiscard]] const RectangleStyle& style() const;
 
   // Setters
   RectangleStyle& style();

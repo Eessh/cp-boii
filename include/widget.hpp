@@ -19,14 +19,14 @@ public:
   ~Widget();
 
   // Getters
-  const unsigned int& width() const;
-  const unsigned int& height() const;
-  const unsigned int& offset_x() const;
-  const unsigned int& offset_y() const;
-  const unsigned int& padding_x() const;
-  const unsigned int& padding_y() const;
-  const SDL_Color& foreground_color() const;
-  const SDL_Color& background_color() const;
+  [[nodiscard]] const unsigned int& width() const;
+  [[nodiscard]] const unsigned int& height() const;
+  [[nodiscard]] const unsigned int& offset_x() const;
+  [[nodiscard]] const unsigned int& offset_y() const;
+  [[nodiscard]] const unsigned int& padding_x() const;
+  [[nodiscard]] const unsigned int& padding_y() const;
+  [[nodiscard]] const SDL_Color& foreground_color() const;
+  [[nodiscard]] const SDL_Color& background_color() const;
 
   // Setters
   unsigned int& width();

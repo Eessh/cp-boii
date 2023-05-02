@@ -1,6 +1,6 @@
 @echo off
 
-.\bin\Debug\cp-boii.exe tests\test.md
+.\bin\Debug\cp-boii.exe src\file_content_viewer.cpp
 
 echo:
 echo Press enter to exit

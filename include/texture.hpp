@@ -21,11 +21,11 @@ public:
   bool load(const std::string& filepath);
 
   // Getters
-  unsigned int width() const;
-  unsigned int height() const;
+  [[nodiscard]] unsigned int width() const;
+  [[nodiscard]] unsigned int height() const;
 
   // Status check
-  bool ok() const;
+  [[nodiscard]] bool ok() const;
 
   // Renders
   void render(const Renderer& renderer, unsigned int x, unsigned int y) const;

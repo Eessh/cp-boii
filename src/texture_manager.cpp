@@ -118,17 +118,27 @@ TextureManager::get_colored_alphabet_char_texture(const char& alphabet,
   return char_texture;
 }
 
-SDL_Texture* TextureManager::get_colored_string_texture(const std::string& str, const SDL_Color& color) {
-  SDL_Surface* text_surface = TTF_RenderUTF8_Blended(FontManager::get_instance()->get_default_font(), str.c_str(), color);
-  if (!text_surface) {
-    log_error("Unable to create colored text surface for text: %s, error: %s", str.c_str(), TTF_GetError());
+SDL_Texture* TextureManager::get_colored_string_texture(const std::string& str,
+                                                        const SDL_Color& color)
+{
+  SDL_Surface* text_surface = TTF_RenderUTF8_Blended(
+    FontManager::get_instance()->get_default_font(), str.c_str(), color);
+  if(!text_surface)
+  {
+    log_error("Unable to create colored text surface for text: %s, error: %s",
+              str.c_str(),
+              TTF_GetError());
     // TODO: handle dis
     return nullptr;
   }
-  SDL_Texture* text_texture = SDL_CreateTextureFromSurface(SingletonRenderer::get_instance()->renderer(), text_surface);
+  SDL_Texture* text_texture = SDL_CreateTextureFromSurface(
+    SingletonRenderer::get_instance()->renderer(), text_surface);
   if(!text_texture)
   {
-    log_error("Unable to create colored text texture from surface for text: %s, error: %s", str.c_str(), SDL_GetError());
+    log_error("Unable to create colored text texture from surface for text: "
+              "%s, error: %s",
+              str.c_str(),
+              SDL_GetError());
     SDL_FreeSurface(text_surface);
     // TODO: handle dis
   }

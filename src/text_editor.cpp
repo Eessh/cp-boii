@@ -1,11 +1,15 @@
 #define SDL_MAIN_HANDLED
 #include "../SDL2/include/SDL.h"
-#include "../log-boii/log_boii.h"
 #include "../include/font_manager.hpp"
-#include "../include/texture_manager.hpp"
-#include "../include/window.hpp"
 #include "../include/singleton_renderer.hpp"
+#include "../include/string_widget.hpp"
+#include "../include/text_buffers/vector_buffer/vector_buffer.hpp"
+#include "../include/texture_manager.hpp"
 #include "../include/vertical_view_widget.hpp"
+#include "../include/window.hpp"
+#include "../log-boii/log_boii.h"
+
+std::vector<std::string>* read_file(const std::string& file_path);
 
 int main(int argc, char** argv)
 {
@@ -27,7 +31,7 @@ int main(int argc, char** argv)
   FontManager::get_instance()->initialize();
   FontManager::get_instance()->load_default_font(16);
 
-  WindowConfig config("File Content Viewer",
+  WindowConfig config("Text Editor",
                       1080,
                       720,
                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
@@ -42,10 +46,10 @@ int main(int argc, char** argv)
   TextureManager::create_instance();
   TextureManager::get_instance()->load_alphabet_char_textures();
 
-  // std::string file_path(argv[1]);
-  // std::vector<std::string>* contents = read_file(file_path);
+  std::string file_path(argv[1]);
+  std::vector<std::string>* contents = read_file(file_path);
 
-  // VectorBuffer buffer(*contents);
+  VectorBuffer buffer(*contents);
 
   VerticalViewWidget widget;
   widget.x() = 0;
@@ -91,17 +95,17 @@ int main(int argc, char** argv)
     SingletonRenderer::get_instance()->clear();
 
     widget.remove_all_children();
-    // std::vector<std::string> text_buffer = buffer.get_buffer();
-    // std::pair<int, int> cursor_coords = buffer.get_cursor_coords();
-    // for(int i = 0; i < text_buffer.size(); i++)
-    // {
-    //   StringWidget* swidget = new StringWidget(text_buffer[i]);
-    //   if(i == cursor_coords.first)
-    //   {
-    //     swidget->foreground_color() = {0, 255, 0, 255};
-    //   }
-    //   widget.add_child(swidget);
-    // }
+    std::vector<std::string> text_buffer = buffer.get_buffer();
+    std::pair<int, int> cursor_coords = buffer.get_cursor_coords();
+    for(int i = 0; i < text_buffer.size(); i++)
+    {
+      StringWidget* swidget = new StringWidget(text_buffer[i]);
+      if(i == cursor_coords.first)
+      {
+        swidget->foreground_color() = {0, 255, 0, 255};
+      }
+      widget.add_child(swidget);
+    }
     widget.render();
 
     SingletonRenderer::get_instance()->present();
@@ -115,4 +119,21 @@ int main(int argc, char** argv)
   SDL_Quit();
 
   return 0;
+}
+
+std::vector<std::string>* read_file(const std::string& file_path)
+{
+  std::ifstream file(file_path);
+  if(file.is_open())
+  {
+    std::vector<std::string>* contents = new std::vector<std::string>();
+    while(file.good())
+    {
+      contents->push_back("");
+      std::getline(file, contents->back());
+    }
+    return contents;
+  }
+  log_error("Unable to open file: %s", file_path.c_str());
+  return {};
 }

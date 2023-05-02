@@ -14,8 +14,8 @@ public:
 
   bool init(SDL_Surface* char_surface);
 
-  const unsigned int& width() const;
-  const unsigned int& height() const;
+  [[nodiscard]] const unsigned int& width() const;
+  [[nodiscard]] const unsigned int& height() const;
   SDL_Texture* texture();
 
 private:
@@ -30,7 +30,7 @@ class TextureManager
 public:
   // Deleting copy constructor
   TextureManager(const TextureManager& texture_manager) = delete;
-  // Deteting copy operator
+  // Deleting copy operator
   TextureManager operator=(const TextureManager& texture_manager) = delete;
 
   ~TextureManager();
@@ -43,7 +43,8 @@ public:
   SDL_Texture* get_alphabet_char_texture(const char& alphabet);
   SDL_Texture* get_colored_alphabet_char_texture(const char& alphabet,
                                                  const SDL_Color& color);
-  SDL_Texture* get_colored_string_texture(const std::string& str, const SDL_Color& color);
+  SDL_Texture* get_colored_string_texture(const std::string& str,
+                                          const SDL_Color& color);
   std::pair<const unsigned int&, const unsigned int&>
   get_alphabet_char_texture_dimensions(const char& alphabet);
 

@@ -1,5 +1,6 @@
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
+#include "SDL_syswm.h"
 
 Window::Window(const std::string& title,
                unsigned int width,
@@ -111,6 +112,62 @@ unsigned int& Window::height()
 std::string& Window::title()
 {
   return _title;
+}
+
+void Window::set_dark_mode()
+{
+  SDL_SysWMinfo wmi;
+  SDL_VERSION(&wmi.version);
+  SDL_GetWindowWMInfo(_window, &wmi);
+  auto hwnd = wmi.info.win.window;
+
+  auto uxtheme = LoadLibraryA("uxtheme.dll");
+  auto dwm = LoadLibraryA("dwmapi.dll");
+
+  if(uxtheme && dwm)
+  {
+    typedef HRESULT (*SetWindowThemePTR)(HWND, const wchar_t*, const wchar_t*);
+    auto SetWindowTheme =
+      (SetWindowThemePTR)GetProcAddress(uxtheme, "SetWindowTheme");
+
+    typedef HRESULT (*DwmSetWindowAttributePTR)(HWND, DWORD, LPCVOID, DWORD);
+    auto DwmSetWindowAttribute =
+      (DwmSetWindowAttributePTR)GetProcAddress(dwm, "DwmSetWindowAttribute");
+
+    if(SetWindowTheme && DwmSetWindowAttribute)
+    {
+      SetWindowTheme(hwnd, L"DarkMode_Explorer", nullptr);
+
+      BOOL darkMode = 1;
+      if(!DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof darkMode))
+      {
+        DwmSetWindowAttribute(hwnd, 19, &darkMode, sizeof darkMode);
+      }
+    }
+  }
+
+  // Paints the background of the window black
+  //  PAINTSTRUCT ps;
+  //  RECT rc;
+  //  HDC hdc = BeginPaint(hwnd, &ps);
+  //  GetClientRect(hwnd, &rc);
+  //  SetBkColor(hdc, BLACK_BRUSH);
+  //  ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rc, 0, 0, 0);
+  //  EndPaint(hwnd, &ps);
+}
+
+void Window::set_icon(const std::string& icon_file_path)
+{
+  SDL_Surface* icon_surface = nullptr;
+  icon_surface = SDL_LoadBMP(icon_file_path.c_str());
+  if(!icon_surface)
+  {
+    // TODO: handle dis
+    return;
+  }
+
+  SDL_SetWindowIcon(_window, icon_surface);
+  SDL_FreeSurface(icon_surface);
 }
 
 bool Window::ok() const

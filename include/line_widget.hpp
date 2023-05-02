@@ -6,13 +6,14 @@
 #include "rectangle_widget.hpp"
 #include "tokenizable_text_widget.hpp"
 
-class LineWidget: public BaseWidget {
+class LineWidget : public BaseWidget
+{
 public:
-  LineWidget(const std::string& text);
+  explicit LineWidget(const std::string& text);
   ~LineWidget();
 
   // Getters
-  const std::string& text() const;
+  [[nodiscard]] const std::string& text() const;
 
   // Setters
   std::string& text();

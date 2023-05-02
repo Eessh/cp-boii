@@ -1,10 +1,10 @@
 #include "../../../include/text_buffers/vector_buffer/vector_buffer.hpp"
-#include "../../../log-boii/log_boii.h"
+#include <stdexcept>
 
 VectorBuffer::VectorBuffer()
 : _cursor_row(0), _cursor_col(-1)
 {
-  _buffer.push_back("");
+  _buffer.emplace_back("");
 }
 
 VectorBuffer::VectorBuffer(const std::string& str)
@@ -19,25 +19,22 @@ VectorBuffer::VectorBuffer(const std::vector<std::string>& buffer)
   _buffer = buffer;
 }
 
-VectorBuffer::~VectorBuffer() {}
-
-const std::pair<int, int> VectorBuffer::get_cursor_coords() const {
-  return { _cursor_row, _cursor_col };
+Result<std::pair<int, int>, std::string> VectorBuffer::get_cursor_coords() const {
+  return Ok<std::pair<int, int>>({_cursor_row, _cursor_col});
 }
 
-const std::string& VectorBuffer::get_line(const unsigned int& line_number) const {
+Result<const std::string&, std::string> VectorBuffer::get_line(const unsigned int& line_number) const {
   if (line_number >= _buffer.size()) {
-    log_error("Error while accessing line from buffer: line_number argument exceeded size of buffer!");
-    return "";
+    return Error<std::string>("Line number out of range!");
   }
-  return _buffer[line_number];
+  return Ok<const std::string&>(_buffer[line_number]);
 }
 
-const std::vector<std::string>& VectorBuffer::get_buffer() const {
-  return _buffer;
+Result<const std::vector<std::string>&, std::string> VectorBuffer::get_buffer() const {
+  return Ok<const std::vector<std::string>&>(_buffer);
 }
 
-void VectorBuffer::insert_char(const char& character) {
+Result<bool, std::string> VectorBuffer::insert_char(const char& character) {
   if (_cursor_col == _buffer[_cursor_row].size()-1) {
     // cursor at end of line
     // so just pushback the character
@@ -48,9 +45,10 @@ void VectorBuffer::insert_char(const char& character) {
     _buffer[_cursor_row].insert(_buffer[_cursor_row].begin()+_cursor_col+1, character);
   }
   _cursor_col++;
+  return Ok(true);
 }
 
-void VectorBuffer::insert_string(const std::string& str) {
+Result<bool, std::string> VectorBuffer::insert_string(const std::string& str) {
   // if we encounter '\n' character in str
   // we need to create a new line and insert
   // the remaining string into it
@@ -73,6 +71,7 @@ void VectorBuffer::insert_string(const std::string& str) {
       _cursor_col++;
     }
   }
+  return Ok(true);
 }
 
 void VectorBuffer::execute_command(const Command& command, const std::string& insert_str) {
@@ -114,7 +113,7 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
       // cursor at last line
       // so need to create a new line
       // and place cursor at the start
-      _buffer.push_back("");
+      _buffer.emplace_back("");
       _cursor_row++;
       _cursor_col = -1;
     }
@@ -137,10 +136,8 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
   }
   case Command::MOVE_CURSOR_UP: {
     if (_cursor_row == 0) {
-      log_trace("Cursor already at starting line of buffer.");
       return;
     }
-    log_trace("Cursor moving up...");
     _cursor_row--;
     break;
   }
@@ -153,10 +150,8 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
   }
   case Command::MOVE_CURSOR_DOWN: {
     if (_cursor_row == _buffer.size()-1) {
-      log_trace("Cursor already at ending line of buffer.");
       return;
     }
-    log_trace("Cursor moving down...");
     _cursor_row++;
     break;
   }
@@ -165,7 +160,7 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
     break;
   }
   case Command::MOVE_CURSOR_TO_END: {
-    _cursor_col = _buffer[_cursor_row].size()-1;
+    _cursor_col = (int)_buffer[_cursor_row].size()-1;
     break;
   }
   case Command::MOVE_CURSOR_TO_BUFFER_START: {
@@ -174,12 +169,11 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
     break;
   }
   case Command::MOVE_CURSOR_TO_BUFFER_END: {
-    _cursor_row = _buffer.size()-1;
+    _cursor_row = (int)_buffer.size()-1;
     _cursor_col = 0;
     break;
   }
   default: {
-    log_warn("Encountered an undefined Command!");
     break;
   }
   }

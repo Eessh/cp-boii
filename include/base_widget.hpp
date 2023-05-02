@@ -13,15 +13,15 @@ class BaseWidget
 public:
   BaseWidget();
 
-  ~BaseWidget();
+  virtual ~BaseWidget() = 0;
 
   // Getters
-  const unsigned int& x() const;
-  const unsigned int& y() const;
-  const unsigned int& width() const;
-  const unsigned int& height() const;
-  const SDL_Color& foreground_color() const;
-  const SDL_Color& background_color() const;
+  [[nodiscard]] const unsigned int& x() const;
+  [[nodiscard]] const unsigned int& y() const;
+  [[nodiscard]] const unsigned int& width() const;
+  [[nodiscard]] const unsigned int& height() const;
+  [[nodiscard]] const SDL_Color& foreground_color() const;
+  [[nodiscard]] const SDL_Color& background_color() const;
 
   // Setters
   unsigned int& x();

@@ -56,16 +56,16 @@ public:
          unsigned int height,
          Uint32 flags);
 
-  Window(const WindowConfig& config);
+  explicit Window(const WindowConfig& config);
 
   ~Window();
 
   // Getters
-  unsigned int x() const;
-  unsigned int y() const;
-  unsigned int width() const;
-  unsigned int height() const;
-  const std::string& title() const;
+  [[nodiscard]] unsigned int x() const;
+  [[nodiscard]] unsigned int y() const;
+  [[nodiscard]] unsigned int width() const;
+  [[nodiscard]] unsigned int height() const;
+  [[nodiscard]] const std::string& title() const;
 
   // Setters
   unsigned int& x();
@@ -73,9 +73,11 @@ public:
   unsigned int& width();
   unsigned int& height();
   std::string& title();
+  void set_dark_mode();
+  void set_icon(const std::string& icon_file_path);
 
   // Status check
-  bool ok() const;
+  [[nodiscard]] bool ok() const;
 
 private:
   unsigned int _x;

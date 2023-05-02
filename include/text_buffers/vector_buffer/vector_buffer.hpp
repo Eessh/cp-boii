@@ -6,23 +6,24 @@
 #include <string>
 #include <vector>
 #include "../commands.hpp"
+#include "../../result.hpp"
 
 class VectorBuffer {
   public:
   VectorBuffer();
-  VectorBuffer(const std::string& str);
-  VectorBuffer(const std::vector<std::string>& buffer);
+  explicit VectorBuffer(const std::string& str);
+  explicit VectorBuffer(const std::vector<std::string>& buffer);
 
-  ~VectorBuffer();
+  ~VectorBuffer() = default;
 
   // Getters
-  const std::pair<int, int> get_cursor_coords() const;
-  const std::string& get_line(const unsigned int& line_number) const;
-  const std::vector<std::string>& get_buffer() const;
+  [[nodiscard]] Result<std::pair<int, int>, std::string> get_cursor_coords() const;
+  [[nodiscard]] Result<const std::string&, std::string> get_line(const unsigned int& line_number) const;
+  [[nodiscard]] Result<const std::vector<std::string>&, std::string> get_buffer() const;
 
   // Buffer Mutators
-  void insert_char(const char& character);
-  void insert_string(const std::string& str);
+  [[nodiscard]] Result<bool, std::string> insert_char(const char& character);
+  [[nodiscard]] Result<bool, std::string> insert_string(const std::string& str);
 
   // Command Processors
   void execute_command(const Command& command, const std::string& insert_str = "");

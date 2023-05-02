@@ -19,9 +19,9 @@ public:
   static GlobalState* get_instance();
   static void delete_instance();
 
-  const Uint32& last_time() const;
-  const Uint32& current_time() const;
-  const float& delta_time() const;
+  [[nodiscard]] const Uint32& last_time() const;
+  [[nodiscard]] const Uint32& current_time() const;
+  [[nodiscard]] const float& delta_time() const;
 
   void update_time();
 

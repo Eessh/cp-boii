@@ -7,7 +7,7 @@ VerticalViewWidget::VerticalViewWidget()
   : _padding_x(0), _padding_y(0), _scroll_offset_x(0), _scroll_offset_y(0)
 {}
 
-VerticalViewWidget::~VerticalViewWidget() {}
+//VerticalViewWidget::~VerticalViewWidget() {}
 
 void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
 {
@@ -100,59 +100,59 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
     }
     break;
   }
-  // case SDL_MOUSEWHEEL: {
-  //   if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
-  //   {
-  //     return;
-  //   }
+    // case SDL_MOUSEWHEEL: {
+    //   if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
+    //   {
+    //     return;
+    //   }
 
-  //   break;
-  // }
-  case SDL_MULTIGESTURE: {
-    if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
-    {
-      return;
-    }
-    log_info("Multigesture event :)");
-    // TODO: handle scrolling using multigestures
-    // for more cheeewesey butttery scrolling
-    if(event.mgesture.numFingers == 2)
-    {
-      if(!_is_scrolling)
-      {
-        _is_scrolling = true;
-        _scroll_offset_y_prev = event.mgesture.y;
-      }
-      else
-      {
-        double dy = event.mgesture.y - _scroll_offset_y_prev;
-        _scroll_acceleration = _scroll_sensitivity * dy;
-        _scroll_offset_y_prev = event.mgesture.y;
-        _is_scrolling = true;
-      }
-
-      if(_scroll_acceleration > 0)
-      {
-        _scroll_acceleration -= _scroll_friction;
-      }
-      else if(_scroll_acceleration < 0)
-      {
-        _scroll_acceleration += _scroll_friction;
-      }
-      if(abs(_scroll_acceleration < 0.00005))
-      {
-        _scroll_acceleration = 0;
-      }
-      _scroll_offset_y += _scroll_sensitivity * _scroll_acceleration;
-
-      // Scrolling bounds
-      if(_scroll_offset_y > 0)
-      {
-        _scroll_offset_y = 0;
-      }
-    }
-    break;
-  }
+    //   break;
+    // }
+    //  case SDL_MULTIGESTURE: {
+    //    if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
+    //    {
+    //      return;
+    //    }
+    //    log_info("Multigesture event :)");
+    //    // TODO: handle scrolling using multigestures
+    //    // for more cheeewesey butttery scrolling
+    //    if(event.mgesture.numFingers == 2)
+    //    {
+    //      if(!_is_scrolling)
+    //      {
+    //        _is_scrolling = true;
+    //        _scroll_offset_y_prev = event.mgesture.y;
+    //      }
+    //      else
+    //      {
+    //        double dy = event.mgesture.y - _scroll_offset_y_prev;
+    //        _scroll_acceleration = _scroll_sensitivity * dy;
+    //        _scroll_offset_y_prev = event.mgesture.y;
+    //        _is_scrolling = true;
+    //      }
+    //
+    //      if(_scroll_acceleration > 0)
+    //      {
+    //        _scroll_acceleration -= _scroll_friction;
+    //      }
+    //      else if(_scroll_acceleration < 0)
+    //      {
+    //        _scroll_acceleration += _scroll_friction;
+    //      }
+    //      if(abs(_scroll_acceleration < 0.00005))
+    //      {
+    //        _scroll_acceleration = 0;
+    //      }
+    //      _scroll_offset_y += _scroll_sensitivity * _scroll_acceleration;
+    //
+    //      // Scrolling bounds
+    //      if(_scroll_offset_y > 0)
+    //      {
+    //        _scroll_offset_y = 0;
+    //      }
+    //    }
+    //    break;
+    //  }
   case SDL_FINGERDOWN: {
     _is_scrolling = false;
     break;
@@ -161,10 +161,10 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
     break;
   }
   }
-  for(BaseWidget* child : this->_children)
-  {
-    child->process_sdl_event(event);
-  }
+  //  for(BaseWidget* child : this->_children)
+  //  {
+  //    child->process_sdl_event(event);
+  //  }
 }
 
 void VerticalViewWidget::render() const
@@ -186,7 +186,7 @@ void VerticalViewWidget::render() const
   int painter_y = this->_y + _padding_y;
 
   // TODO: handle scrolling offset
-  // handle using scroll accleration & friction for smooth scrolling
+  // handle using scroll acceleration & friction for smooth scrolling
   // painter_x += _scroll_offset_x;
   // painter_y += _scroll_offset_y;
 

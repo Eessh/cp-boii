@@ -1,6 +1,6 @@
 #include <fstream>
-#include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #define SDL_MAIN_HANDLED
 #include "../SDL2/include/SDL.h"
@@ -13,16 +13,24 @@
 #include "../include/vertical_view_widget.hpp"
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
+#include "SDL_syswm.h"
 
 std::vector<std::string>* read_file(const std::string& file_path);
 
 int main(int argc, char** argv)
 {
-
   if(argc < 2)
   {
     log_fatal("Error: No file is provided as an argument");
     log_info("Usage: cp-boii.exe <file_path>");
+    return 1;
+  }
+
+  std::string file_path(argv[1]);
+  std::vector<std::string>* contents = read_file(file_path);
+  if(!contents)
+  {
+    log_fatal("Unable to find file: %s", file_path.c_str());
     return 1;
   }
 
@@ -44,15 +52,14 @@ int main(int argc, char** argv)
                         SDL_WINDOW_MOUSE_FOCUS);
 
   Window window(config);
+  window.set_dark_mode();
+  window.set_icon("assets/icons/icon.bmp");
 
   SingletonRenderer::create_instance(
     window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_SOFTWARE);
 
   TextureManager::create_instance();
   TextureManager::get_instance()->load_alphabet_char_textures();
-
-  std::string file_path(argv[1]);
-  std::vector<std::string>* contents = read_file(file_path);
 
   VectorBuffer buffer(*contents);
 
@@ -102,8 +109,24 @@ int main(int argc, char** argv)
     SingletonRenderer::get_instance()->clear();
 
     widget.remove_all_children();
-    std::vector<std::string> text_buffer = buffer.get_buffer();
-    std::pair<int, int> cursor_coords = buffer.get_cursor_coords();
+    std::vector<std::string> text_buffer;
+    std::pair<int, int> cursor_coords;
+    {
+      auto result = buffer.get_buffer();
+      if (result.error()) {
+        //      TODO: handle dis
+        return 1;
+      }
+      text_buffer = result.take_ok_value();
+    }
+    {
+      auto result = buffer.get_cursor_coords();
+      if (result.error()) {
+//        TODO: handle dis
+        return 1;
+      }
+      cursor_coords = result.take_ok_value();
+    }
     for(int i = 0; i < text_buffer.size(); i++)
     {
       StringWidget* swidget = new StringWidget(text_buffer[i]);
@@ -142,5 +165,5 @@ std::vector<std::string>* read_file(const std::string& file_path)
     return contents;
   }
   log_error("Unable to open file: %s", file_path.c_str());
-  return {};
+  return nullptr;
 }

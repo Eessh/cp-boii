@@ -2,6 +2,7 @@ require "export-compile-commands"
 
 workspace("cp-boii")
 	configurations({ "Debug", "Release" })
+	defines { "TTF_USE_HARFBUZZ", "LOG_BOII__COLORED_LOGS", "LOG_BOII__HIGHLIGHT_WARN_ERROR_FATAL_STRINGS" }
 	filter("configurations:Debug")
 		defines({ "DEBUG" })
 		symbols("On")
@@ -31,7 +32,7 @@ workspace("cp-boii")
 			"log-boii/log_boii.c",
 			"tinyfiledialogs/tinyfiledialogs.c",
 		})
-		removefiles { "src/main.cpp","src/file_content_viewer.cpp" }
+		removefiles { "src/main.cpp","src/text_editor.cpp" }
 		filter({ "system:windows" })
 			links({
 				"SDL2main",
@@ -39,6 +40,7 @@ workspace("cp-boii")
 				"SDL2_ttf",
 				"comdlg32",
 				"ole32",
+				"gdi32"
 			})
 			libdirs({ "SDL2/lib", "SDL2_ttf/lib" })
 		filter({ "system:linux" })

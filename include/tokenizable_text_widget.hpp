@@ -6,13 +6,14 @@
 #include <string>
 #include "base_widget.hpp"
 
-class TokenizableTextWidget: public BaseWidget {
+class TokenizableTextWidget : public BaseWidget
+{
 public:
-  TokenizableTextWidget(const std::string& text);
-  ~TokenizableTextWidget();
+  explicit TokenizableTextWidget(const std::string& text);
+  ~TokenizableTextWidget() = default;
 
   // Getters
-  const std::string& text() const;
+  [[nodiscard]] const std::string& text() const;
 
   // Setters
   std::string& text();
