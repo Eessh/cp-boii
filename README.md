@@ -6,7 +6,7 @@ Made a simple File Viewer with the custom made widgets in SDL2.
 
 Have attached the screenshot of File Viewer viewing it's source code.
 
-![File Viewer](./screenshots/file_viewer.png)
+![File Viewer](./screenshots/cp_boii.png)
 
 ### Building
 ```powershell
