@@ -33,7 +33,6 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
     break;
   }
   case SDL_MOUSEWHEEL: {
-    // log_info("some event x, y = %d, %d", event.wheel.mouseX, event.wheel.mouseY);
     if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
     {
       return;
@@ -41,19 +40,21 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
     if(event.wheel.y > 0)
     {
       // scroll down
-      _scroll_offset_y += 10 * event.wheel.y;
+      _scroll_offset_y += 5 * event.wheel.y;
       if(_scroll_offset_y > 0)
       {
         _scroll_offset_y = 0;
       }
+#ifdef DEBUG
       log_debug("Scroll down, offset = %d, preciseY: %f",
                 _scroll_offset_y,
                 event.wheel.preciseX);
+#endif
     }
     if(event.wheel.y < 0)
     {
       // scroll up
-      _scroll_offset_y += 10 * event.wheel.y;
+      _scroll_offset_y += 5 * event.wheel.y;
       unsigned int children_height = 0;
       for(const BaseWidget* child : this->_children)
       {
@@ -64,9 +65,11 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
       {
         _scroll_offset_y = -children_height;
       }
+#ifdef DEBUG
       log_debug("Scroll up, offset = %d, preciseY: %f",
                 _scroll_offset_y,
                 event.wheel.preciseX);
+#endif
     }
     if(event.wheel.x > 0)
     {
@@ -100,19 +103,7 @@ void VerticalViewWidget::process_sdl_event(const SDL_Event& event)
     }
     break;
   }
-    // case SDL_MOUSEWHEEL: {
-    //   if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
-    //   {
-    //     return;
-    //   }
-
-    //   break;
-    // }
     //  case SDL_MULTIGESTURE: {
-    //    if(!point_lies_inside(event.wheel.mouseX, event.wheel.mouseY))
-    //    {
-    //      return;
-    //    }
     //    log_info("Multigesture event :)");
     //    // TODO: handle scrolling using multigestures
     //    // for more cheeewesey butttery scrolling

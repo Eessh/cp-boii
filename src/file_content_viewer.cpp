@@ -4,6 +4,7 @@
 #include <vector>
 #define SDL_MAIN_HANDLED
 #include "../SDL2/include/SDL.h"
+#include "../include/editor_view.hpp"
 #include "../include/font_manager.hpp"
 #include "../include/global_state.hpp"
 #include "../include/singleton_renderer.hpp"
@@ -40,11 +41,17 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  SDL_bool hint_set = SDL_SetHint(SDL_HINT_TRACKPAD_IS_TOUCH_ONLY, "1");
+  if(hint_set == SDL_FALSE)
+  {
+    log_error("Unable to set touchpad events hint!");
+  }
+
   FontManager::create_instance();
   FontManager::get_instance()->initialize();
   FontManager::get_instance()->load_default_font(16);
 
-  WindowConfig config("File Content Viewer",
+  WindowConfig config("CP Boii",
                       1080,
                       720,
                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
@@ -61,17 +68,23 @@ int main(int argc, char** argv)
   TextureManager::create_instance();
   TextureManager::get_instance()->load_alphabet_char_textures();
 
-  VectorBuffer buffer(*contents);
+  //  VectorBuffer buffer(*contents);
 
-  VerticalViewWidget widget;
-  widget.x() = 0;
-  widget.y() = 0;
-  widget.width() = 1080;
-  widget.height() = 720;
-  // for(const std::string& line : *contents)
-  // {
-  //   widget.add_child(new StringWidget(line));
-  // }
+  //  VerticalViewWidget widget;
+  //  widget.x() = 0;
+  //  widget.y() = 0;
+  //  widget.width() = 1080;
+  //  widget.height() = 720;
+
+  EditorView editor_view_widget(*contents);
+  //  editor_view_widget.log_buffer();
+  editor_view_widget.set_x(0);
+  editor_view_widget.set_y(0);
+  editor_view_widget.set_width((int)config.width);
+  editor_view_widget.set_height((int)config.height);
+  editor_view_widget.set_foreground({255, 255, 255, 0});
+  editor_view_widget.set_background({0, 0, 0, 255});
+  editor_view_widget.set_active_background({16, 16, 16, 255});
 
   // Freeing memory occupied by file contents
   delete contents;
@@ -88,55 +101,62 @@ int main(int argc, char** argv)
       if(event.type == SDL_QUIT)
       {
         running = false;
-        continue;
+        break;
       }
       if(event.type == SDL_KEYDOWN)
       {
         if(event.key.keysym.sym == SDLK_UP)
         {
-          buffer.execute_command(Command::MOVE_CURSOR_UP);
+          //          buffer.execute_command(Command::MOVE_CURSOR_UP);
         }
         else if(event.key.keysym.sym == SDLK_DOWN)
         {
-          buffer.execute_command(Command::MOVE_CURSOR_DOWN);
+          //          buffer.execute_command(Command::MOVE_CURSOR_DOWN);
         }
       }
-      widget.process_sdl_event(event);
+      //      widget.process_sdl_event(event);
+      auto _ = editor_view_widget.process_sdl_event(event);
     }
 
     // GlobalState::get_instance()->update_time();
 
     SingletonRenderer::get_instance()->clear();
 
-    widget.remove_all_children();
-    std::vector<std::string> text_buffer;
-    std::pair<int, int> cursor_coords;
+    //    widget.remove_all_children();
+    //    std::vector<std::string> text_buffer;
+    //    std::pair<int, int> cursor_coords;
+    //    {
+    //      auto result = buffer.get_buffer();
+    //      if (result.error()) {
+    //        //      TODO: handle dis
+    //        return 1;
+    //      }
+    //      text_buffer = result.take_ok_value();
+    //    }
+    //    {
+    //      auto result = buffer.get_cursor_coords();
+    //      if (result.error()) {
+    ////        TODO: handle dis
+    //        return 1;
+    //      }
+    //      cursor_coords = result.take_ok_value();
+    //    }
+    //    for(int i = 0; i < text_buffer.size(); i++)
+    //    {
+    //      StringWidget* swidget = new StringWidget(text_buffer[i]);
+    //      if(i == cursor_coords.first)
+    //      {
+    //        swidget->foreground_color() = {0, 255, 0, 255};
+    //      }
+    //      widget.add_child(swidget);
+    //    }
+    //    widget.render();
+
+    Result<bool, std::string> _ = editor_view_widget.render();
+    if(_.error())
     {
-      auto result = buffer.get_buffer();
-      if (result.error()) {
-        //      TODO: handle dis
-        return 1;
-      }
-      text_buffer = result.take_ok_value();
+      log_fatal("Unable to render editor view widget!");
     }
-    {
-      auto result = buffer.get_cursor_coords();
-      if (result.error()) {
-//        TODO: handle dis
-        return 1;
-      }
-      cursor_coords = result.take_ok_value();
-    }
-    for(int i = 0; i < text_buffer.size(); i++)
-    {
-      StringWidget* swidget = new StringWidget(text_buffer[i]);
-      if(i == cursor_coords.first)
-      {
-        swidget->foreground_color() = {0, 255, 0, 255};
-      }
-      widget.add_child(swidget);
-    }
-    widget.render();
 
     SingletonRenderer::get_instance()->present();
   }

@@ -19,7 +19,9 @@ class VectorBuffer {
   // Getters
   [[nodiscard]] Result<std::pair<int, int>, std::string> get_cursor_coords() const;
   [[nodiscard]] Result<const std::string&, std::string> get_line(const unsigned int& line_number) const;
+  [[nodiscard]] std::string get_line_unsafe(const unsigned int& line_number) const;
   [[nodiscard]] Result<const std::vector<std::string>&, std::string> get_buffer() const;
+  [[nodiscard]] int size() const;
 
   // Buffer Mutators
   [[nodiscard]] Result<bool, std::string> insert_char(const char& character);

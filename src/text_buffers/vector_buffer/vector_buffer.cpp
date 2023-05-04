@@ -30,8 +30,18 @@ Result<const std::string&, std::string> VectorBuffer::get_line(const unsigned in
   return Ok<const std::string&>(_buffer[line_number]);
 }
 
+std::string VectorBuffer::get_line_unsafe(const unsigned int& line_number) const
+{
+  return _buffer[line_number];
+}
+
 Result<const std::vector<std::string>&, std::string> VectorBuffer::get_buffer() const {
   return Ok<const std::vector<std::string>&>(_buffer);
+}
+
+int VectorBuffer::size() const
+{
+  return (int)_buffer.size();
 }
 
 Result<bool, std::string> VectorBuffer::insert_char(const char& character) {
@@ -129,7 +139,14 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
   }
   case Command::MOVE_CURSOR_BACK: {
     if (_cursor_col == -1) {
-      return;
+      if (_cursor_row != 0) {
+        _cursor_row -= 1;
+        _cursor_col = _buffer[_cursor_row].size()-1;
+        return;
+      }
+      else {
+        return;
+      }
     }
     _cursor_col--;
     break;
@@ -139,11 +156,21 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
       return;
     }
     _cursor_row--;
+    if (_cursor_col >= (int)_buffer[_cursor_row].size()) {
+      _cursor_col = (int)_buffer[_cursor_row].size()-1;
+    }
     break;
   }
   case Command::MOVE_CURSOR_FORWARD: {
     if (_cursor_col == _buffer[_cursor_row].size()-1) {
-      return;
+      if (_cursor_row != _buffer.size()-1) {
+        _cursor_col = -1;
+        _cursor_row += 1;
+        return;
+      }
+      else {
+        return;
+      }
     }
     _cursor_col++;
     break;
@@ -153,6 +180,9 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
       return;
     }
     _cursor_row++;
+    if (_cursor_col >= (int)_buffer[_cursor_row].size()) {
+      _cursor_col = (int)_buffer[_cursor_row].size()-1;
+    }
     break;
   }
   case Command::MOVE_CURSOR_TO_HOME: {

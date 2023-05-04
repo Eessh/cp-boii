@@ -84,6 +84,11 @@ const Uint32& SingletonRenderer::flags() const
   return _flags;
 }
 
+bool SingletonRenderer::has_clip_rect() const
+{
+  return SDL_RenderIsClipEnabled(_renderer) == SDL_TRUE;
+}
+
 int& SingletonRenderer::driver_index()
 {
   return _driver_index;

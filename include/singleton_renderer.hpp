@@ -32,6 +32,7 @@ public:
   // Getters
   [[nodiscard]] const int& driver_index() const;
   [[nodiscard]] const Uint32& flags() const;
+  [[nodiscard]] bool has_clip_rect() const;
 
   // Setters
   int& driver_index();
