@@ -14,7 +14,12 @@
 #include "../include/vertical_view_widget.hpp"
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
+#ifdef _WIN64
 #include "SDL_syswm.h"
+//define something for Windows (64-bit only)
+#elif _WIN32
+#include "SDL_syswm.h"
+#endif
 
 std::vector<std::string>* read_file(const std::string& file_path);
 
