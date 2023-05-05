@@ -121,6 +121,7 @@ std::string& Window::title()
 
 void Window::set_dark_mode()
 {
+#ifdef _WIN64
   SDL_SysWMinfo wmi;
   SDL_VERSION(&wmi.version);
   SDL_GetWindowWMInfo(_window, &wmi);
@@ -150,6 +151,37 @@ void Window::set_dark_mode()
       }
     }
   }
+#elif _WIN32
+  SDL_SysWMinfo wmi;
+  SDL_VERSION(&wmi.version);
+  SDL_GetWindowWMInfo(_window, &wmi);
+  auto hwnd = wmi.info.win.window;
+
+  auto uxtheme = LoadLibraryA("uxtheme.dll");
+  auto dwm = LoadLibraryA("dwmapi.dll");
+
+  if(uxtheme && dwm)
+  {
+    typedef HRESULT (*SetWindowThemePTR)(HWND, const wchar_t*, const wchar_t*);
+    auto SetWindowTheme =
+      (SetWindowThemePTR)GetProcAddress(uxtheme, "SetWindowTheme");
+
+    typedef HRESULT (*DwmSetWindowAttributePTR)(HWND, DWORD, LPCVOID, DWORD);
+    auto DwmSetWindowAttribute =
+      (DwmSetWindowAttributePTR)GetProcAddress(dwm, "DwmSetWindowAttribute");
+
+    if(SetWindowTheme && DwmSetWindowAttribute)
+    {
+      SetWindowTheme(hwnd, L"DarkMode_Explorer", nullptr);
+
+      BOOL darkMode = 1;
+      if(!DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof darkMode))
+      {
+        DwmSetWindowAttribute(hwnd, 19, &darkMode, sizeof darkMode);
+      }
+    }
+  }
+#endif
 
   // Paints the background of the window black
   //  PAINTSTRUCT ps;

@@ -64,7 +64,11 @@ int main(int argc, char** argv)
                         SDL_WINDOW_MOUSE_FOCUS);
 
   Window window(config);
+#ifdef _WIN64
   window.set_dark_mode();
+#elif _WIN32
+  window.set_dark_mode();
+#endif
   window.set_icon("assets/icons/fire.bmp");
 
   SingletonRenderer::create_instance(
