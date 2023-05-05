@@ -101,18 +101,63 @@ DirectRender::render_line_view(const int& x,
                                const int& y,
                                const int& view_width,
                                const std::string& line,
+                               const int& line_number,
+                               const int& max_line_number,
                                const bool& is_active,
                                const SDL_Color& foreground,
                                const SDL_Color& background,
-                               const SDL_Color& active_background)
+                               const SDL_Color& active_background,
+                               const SDL_Color& line_number_foreground,
+                               const SDL_Color& line_number_background,
+                               const SDL_Color& line_number_active_foreground,
+                               const SDL_Color& line_number_active_background)
 {
+  //  Drawing line number
+  std::string line_number_str = std::to_string(line_number + 1),
+              max_line_number_str = std::to_string(max_line_number);
+  int char_difference =
+    (int)(max_line_number_str.length() - line_number_str.length());
+  while(char_difference--)
+  {
+    line_number_str.insert(line_number_str.begin(), ' ');
+  }
+  line_number_str.insert(line_number_str.begin(), ' ');
+  line_number_str.push_back(' ');
+  std::pair<unsigned int, unsigned int> line_number_str_dimensions =
+    FontManager::get_instance()->get_text_dimensions(line_number_str);
+  SDL_Texture* line_number_texture =
+    TextureManager::get_instance()->get_colored_string_texture(
+      line_number_str,
+      is_active ? line_number_active_foreground : line_number_foreground);
+  if(!line_number_texture)
+  {
+    return Error<std::string>("Unable to create texture for line number!");
+  }
+  SDL_Rect line_number_destination_rect{
+    .x = x,
+    .y = y,
+    .w = static_cast<int>(line_number_str_dimensions.first),
+    .h = static_cast<int>(line_number_str_dimensions.second)};
+  DirectRender::render_filled_rectangle(
+    x,
+    y,
+    static_cast<int>(line_number_str_dimensions.first),
+    static_cast<int>(line_number_str_dimensions.second),
+    is_active ? line_number_active_background : line_number_background);
+  SDL_RenderCopy(SingletonRenderer::get_instance()->renderer(),
+                 line_number_texture,
+                 nullptr,
+                 &line_number_destination_rect);
+  SDL_DestroyTexture(line_number_texture);
+
+  //  Drawing line background
   if(line.length() < 1)
   {
     int character_height =
       static_cast<int>(TextureManager::get_instance()
                          ->get_alphabet_char_texture_dimensions('a')
                          .second);
-    DirectRender::render_filled_rectangle(x,
+    DirectRender::render_filled_rectangle(x + line_number_destination_rect.w,
                                           y,
                                           view_width,
                                           character_height,
@@ -121,6 +166,7 @@ DirectRender::render_line_view(const int& x,
     return Ok(true);
   }
 
+  //  Drawing line text
   SDL_Texture* line_texture =
     TextureManager::get_instance()->get_colored_string_texture(line,
                                                                foreground);
@@ -131,11 +177,11 @@ DirectRender::render_line_view(const int& x,
 
   std::pair<unsigned int, unsigned int> line_texture_dimensions =
     FontManager::get_instance()->get_text_dimensions(line);
-  SDL_Rect destination_rect{.x = x,
+  SDL_Rect destination_rect{.x = x + line_number_destination_rect.w,
                             .y = y,
                             .w = (int)line_texture_dimensions.first,
                             .h = (int)line_texture_dimensions.second};
-  DirectRender::render_filled_rectangle(x,
+  DirectRender::render_filled_rectangle(x + line_number_destination_rect.w,
                                         y,
                                         view_width,
                                         (int)line_texture_dimensions.second,

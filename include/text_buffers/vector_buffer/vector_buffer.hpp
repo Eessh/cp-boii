@@ -23,6 +23,9 @@ class VectorBuffer {
   [[nodiscard]] Result<const std::vector<std::string>&, std::string> get_buffer() const;
   [[nodiscard]] int size() const;
 
+//  Setters
+  Result<bool, std::string> set_cursor_coords(const int& row, const int& column);
+
   // Buffer Mutators
   [[nodiscard]] Result<bool, std::string> insert_char(const char& character);
   [[nodiscard]] Result<bool, std::string> insert_string(const std::string& str);

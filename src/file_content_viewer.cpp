@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
   Window window(config);
   window.set_dark_mode();
-  window.set_icon("assets/icons/icon.bmp");
+  window.set_icon("assets/icons/fire.bmp");
 
   SingletonRenderer::create_instance(
     window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_SOFTWARE);
@@ -82,9 +82,13 @@ int main(int argc, char** argv)
   editor_view_widget.set_y(0);
   editor_view_widget.set_width((int)config.width);
   editor_view_widget.set_height((int)config.height);
-  editor_view_widget.set_foreground({255, 255, 255, 0});
-  editor_view_widget.set_background({0, 0, 0, 255});
-  editor_view_widget.set_active_background({16, 16, 16, 255});
+  editor_view_widget.set_foreground({211, 198, 170, 0});
+  editor_view_widget.set_background({30, 35, 38, 255});
+  editor_view_widget.set_active_background({39, 46, 51, 255});
+  editor_view_widget.set_line_number_foreground({73, 81, 86, 255});
+  editor_view_widget.set_line_number_background({39, 46, 51, 255});
+  editor_view_widget.set_line_number_active_foreground({211, 198, 170, 255});
+  editor_view_widget.set_line_number_active_background({39, 46, 51, 255});
 
   // Freeing memory occupied by file contents
   delete contents;

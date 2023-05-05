@@ -32,14 +32,21 @@ Result<bool, std::string> render_string(const int& x,
                                         const int& y,
                                         const std::string& text,
                                         const SDL_Color& color);
-Result<bool, std::string> render_line_view(const int& x,
-                                           const int& y,
-                                           const int& view_width,
-                                           const std::string& line,
-                                           const bool& is_active,
-                                           const SDL_Color& foreground,
-                                           const SDL_Color& background,
-                                           const SDL_Color& active_background);
+Result<bool, std::string>
+render_line_view(const int& x,
+                 const int& y,
+                 const int& view_width,
+                 const std::string& line,
+                 const int& line_number,
+                 const int& max_line_number,
+                 const bool& is_active,
+                 const SDL_Color& foreground,
+                 const SDL_Color& background,
+                 const SDL_Color& active_background,
+                 const SDL_Color& line_number_foreground,
+                 const SDL_Color& line_number_background,
+                 const SDL_Color& line_number_active_foreground,
+                 const SDL_Color& line_number_active_background);
 
 }; // namespace DirectRender
 

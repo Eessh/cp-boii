@@ -30,6 +30,14 @@ public:
   [[nodiscard]] Result<const SDL_Color&, std::string> foreground() const;
   [[nodiscard]] Result<const SDL_Color&, std::string> background() const;
   [[nodiscard]] Result<const SDL_Color&, std::string> active_background() const;
+  [[nodiscard]] Result<const SDL_Color&, std::string>
+  line_number_foreground() const;
+  [[nodiscard]] Result<const SDL_Color&, std::string>
+  line_number_background() const;
+  [[nodiscard]] Result<const SDL_Color&, std::string>
+  line_number_active_foreground() const;
+  [[nodiscard]] Result<const SDL_Color&, std::string>
+  line_number_active_background() const;
 
   //  Setters
   Result<bool, std::string> set_x(const int& x);
@@ -40,6 +48,14 @@ public:
   Result<bool, std::string> set_background(const SDL_Color& background);
   Result<bool, std::string>
   set_active_background(const SDL_Color& active_background);
+  Result<bool, std::string>
+  set_line_number_foreground(const SDL_Color& line_number_foreground);
+  Result<bool, std::string>
+  set_line_number_background(const SDL_Color& line_number_background);
+  Result<bool, std::string> set_line_number_active_foreground(
+    const SDL_Color& line_number_active_foreground);
+  Result<bool, std::string> set_line_number_active_background(
+    const SDL_Color& line_number_active_background);
 
   //  Loggers
   void log_buffer() const;
@@ -51,7 +67,9 @@ public:
 
 private:
   int _x, _y, _width, _height;
-  SDL_Color _foreground, _background, _active_background;
+  SDL_Color _foreground, _background, _active_background,
+    _line_number_foreground, _line_number_background,
+    _line_number_active_foreground, _line_number_active_background;
   int _scroll_offset_x, _scroll_offset_y;
   VectorBuffer _buffer;
 

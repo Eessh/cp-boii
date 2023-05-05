@@ -14,6 +14,10 @@ EditorView::EditorView()
   , _foreground({255, 255, 255, 255})
   , _background({0, 0, 0, 255})
   , _active_background({0, 0, 0, 255})
+  , _line_number_foreground({255, 255, 255, 255})
+  , _line_number_background({0, 0, 0, 255})
+  , _line_number_active_foreground({255, 255, 255, 255})
+  , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _buffer("")
@@ -32,6 +36,10 @@ EditorView::EditorView(const std::string& text)
   , _foreground({255, 255, 255, 255})
   , _background({0, 0, 0, 255})
   , _active_background({0, 0, 0, 255})
+  , _line_number_foreground({255, 255, 255, 255})
+  , _line_number_background({0, 0, 0, 255})
+  , _line_number_active_foreground({255, 255, 255, 255})
+  , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _buffer(text)
@@ -50,6 +58,10 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   , _foreground({255, 255, 255, 255})
   , _background({0, 0, 0, 255})
   , _active_background({0, 0, 0, 255})
+  , _line_number_foreground({255, 255, 255, 255})
+  , _line_number_background({0, 0, 0, 255})
+  , _line_number_active_foreground({255, 255, 255, 255})
+  , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _buffer(buffer)
@@ -99,6 +111,28 @@ Result<const SDL_Color&, std::string> EditorView::active_background() const
   return Ok<const SDL_Color&>(_active_background);
 }
 
+Result<const SDL_Color&, std::string> EditorView::line_number_foreground() const
+{
+  return Ok<const SDL_Color&>(_line_number_foreground);
+}
+
+Result<const SDL_Color&, std::string> EditorView::line_number_background() const
+{
+  return Ok<const SDL_Color&>(_line_number_background);
+}
+
+Result<const SDL_Color&, std::string>
+EditorView::line_number_active_foreground() const
+{
+  return Ok<const SDL_Color&>(_line_number_active_foreground);
+}
+
+Result<const SDL_Color&, std::string>
+EditorView::line_number_active_background() const
+{
+  return Ok<const SDL_Color&>(_line_number_active_background);
+}
+
 Result<bool, std::string> EditorView::set_x(const int& x)
 {
   _x = x;
@@ -143,6 +177,34 @@ EditorView::set_active_background(const SDL_Color& active_background)
   return Ok(true);
 }
 
+Result<bool, std::string>
+EditorView::set_line_number_foreground(const SDL_Color& line_number_foreground)
+{
+  _line_number_foreground = line_number_foreground;
+  return Ok(true);
+}
+
+Result<bool, std::string>
+EditorView::set_line_number_background(const SDL_Color& line_number_background)
+{
+  _line_number_background = line_number_background;
+  return Ok(true);
+}
+
+Result<bool, std::string> EditorView::set_line_number_active_foreground(
+  const SDL_Color& line_number_active_foreground)
+{
+  _line_number_active_foreground = line_number_active_foreground;
+  return Ok(true);
+}
+
+Result<bool, std::string> EditorView::set_line_number_active_background(
+  const SDL_Color& line_number_active_background)
+{
+  _line_number_active_background = line_number_active_background;
+  return Ok(true);
+}
+
 void EditorView::log_buffer() const
 {
   std::cout << "Buffer: {\n";
@@ -165,6 +227,48 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     }
     return Ok(true);
   }
+  case SDL_MOUSEBUTTONDOWN: {
+    if(!point_lies_inside(event.button.x, event.button.y))
+    {
+      return Ok(false);
+    }
+    if(event.button.button == SDL_BUTTON_LEFT)
+    {
+      //      left click
+      int line_numbers_view_width =
+        static_cast<int>(
+          std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
+        _character_width;
+      int line_number =
+        (event.button.y / _character_height) + -_scroll_offset_y;
+      if(event.button.x <= line_numbers_view_width)
+      {
+        _buffer.set_cursor_coords(line_number, -1);
+        return Ok(true);
+      }
+      int column =
+        (event.button.x - line_numbers_view_width) / _character_width;
+      int max_column_for_line_number =
+        static_cast<int>(_buffer.get_line(line_number).ok_value().size());
+      _buffer.set_cursor_coords(line_number,
+                                max_column_for_line_number < column
+                                  ? max_column_for_line_number - 1
+                                  : column - 1);
+    }
+    else if(event.button.button == SDL_BUTTON_RIGHT)
+    {
+      //      right click
+    }
+    else if(event.button.button == SDL_BUTTON_MIDDLE)
+    {
+      //      middle click
+    }
+    else
+    {
+      return Ok(false);
+    }
+    return Ok(true);
+  }
   case SDL_KEYDOWN: {
     if(event.key.keysym.sym == SDLK_LEFT)
     {
@@ -177,30 +281,38 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     else if(event.key.keysym.sym == SDLK_UP)
     {
       _buffer.execute_command(Command::MOVE_CURSOR_UP);
-      std::pair<int, int> cursor_coords = _buffer.get_cursor_coords().ok_value();
-      if (cursor_coords.first < -_scroll_offset_y) {
+      std::pair<int, int> cursor_coords =
+        _buffer.get_cursor_coords().ok_value();
+      if(cursor_coords.first < -_scroll_offset_y)
+      {
         _scroll_offset_y += 1;
       }
-      if (cursor_coords.first + _scroll_offset_y < 1) {
+      if(cursor_coords.first + _scroll_offset_y < 1)
+      {
         _scroll_offset_y = -cursor_coords.first;
       }
     }
     else if(event.key.keysym.sym == SDLK_DOWN)
     {
       _buffer.execute_command(Command::MOVE_CURSOR_DOWN);
-      std::pair<int, int> cursor_coords = _buffer.get_cursor_coords().ok_value();
-      int lines_fitting = _height/_character_height;
-      if (cursor_coords.first + _scroll_offset_y > lines_fitting - 1) {
+      std::pair<int, int> cursor_coords =
+        _buffer.get_cursor_coords().ok_value();
+      int lines_fitting = _height / _character_height;
+      if(cursor_coords.first + _scroll_offset_y > lines_fitting - 1)
+      {
         _scroll_offset_y -= 1;
       }
-      if (cursor_coords.first + _scroll_offset_y < 1) {
+      if(cursor_coords.first + _scroll_offset_y < 1)
+      {
         _scroll_offset_y = -cursor_coords.first;
       }
     }
-    else if (event.key.keysym.sym == SDLK_HOME) {
+    else if(event.key.keysym.sym == SDLK_HOME)
+    {
       _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
     }
-    else if (event.key.keysym.sym == SDLK_END) {
+    else if(event.key.keysym.sym == SDLK_END)
+    {
       _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
     }
     else
@@ -234,9 +346,10 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 #endif
       _scroll_offset_y -= 1;
       int buffer_height = (int)(_character_height * _buffer.size());
-      if(_scroll_offset_y*_character_height <= -buffer_height+_height)
+      if(_scroll_offset_y * _character_height <= -buffer_height + _height)
       {
-        _scroll_offset_y = -buffer_height/_character_height+(_height/_character_height)+1;
+        _scroll_offset_y = -buffer_height / _character_height +
+                           (_height / _character_height) + 1;
       }
     }
     return Ok(true);
@@ -248,6 +361,9 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 Result<bool, std::string> EditorView::render() const
 {
   SingletonRenderer::get_instance()->set_clip_rect({_x, _y, _width, _height});
+
+  //  TODO: Shift functionality for drawing lines over here from DirectRender::render_line_view()
+
   int painter_x = _x, painter_y = _y + _character_height * _scroll_offset_y;
   unsigned int buffer_line_to_render = 0;
   while(painter_y < 0 && abs(painter_y) >= _character_height &&
@@ -264,10 +380,16 @@ Result<bool, std::string> EditorView::render() const
         painter_y,
         _width,
         _buffer.get_line(buffer_line_to_render).ok_value(),
+        static_cast<int>(buffer_line_to_render),
+        _buffer.size(),
         _buffer.get_cursor_coords().ok_value().first == buffer_line_to_render,
         _foreground,
         _background,
-        _active_background);
+        _active_background,
+        _line_number_foreground,
+        _line_number_background,
+        _line_number_active_foreground,
+        _line_number_active_background);
     if(line_render_result.error())
     {
       return line_render_result;
@@ -275,8 +397,20 @@ Result<bool, std::string> EditorView::render() const
     buffer_line_to_render += 1;
     painter_y += _character_height;
   }
+
+  //  Drawing cursor
+  std::string max_line_number_str = std::to_string(_buffer.size());
+  max_line_number_str.insert(max_line_number_str.begin(), ' ');
+  max_line_number_str.push_back(' ');
   std::pair<int, int> cursor_coords = _buffer.get_cursor_coords().ok_value();
-  DirectRender::render_filled_rectangle((_scroll_offset_x+cursor_coords.second+1)*_character_width, (_scroll_offset_y+cursor_coords.first)*_character_height, 2, _character_height, _foreground);
+  DirectRender::render_filled_rectangle(
+    (static_cast<int>(max_line_number_str.length()) + _scroll_offset_x +
+     cursor_coords.second + 1) *
+      _character_width,
+    (_scroll_offset_y + cursor_coords.first) * _character_height,
+    2,
+    _character_height,
+    _foreground);
   SingletonRenderer::get_instance()->remove_clip_rect();
   return Ok(true);
 }

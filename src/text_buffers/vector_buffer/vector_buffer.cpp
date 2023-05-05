@@ -44,6 +44,13 @@ int VectorBuffer::size() const
   return (int)_buffer.size();
 }
 
+Result<bool, std::string> VectorBuffer::set_cursor_coords(const int& row, const int& column)
+{
+  _cursor_row = row;
+  _cursor_col = column;
+  return Ok(true);
+}
+
 Result<bool, std::string> VectorBuffer::insert_char(const char& character) {
   if (_cursor_col == _buffer[_cursor_row].size()-1) {
     // cursor at end of line
