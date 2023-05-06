@@ -182,6 +182,7 @@ int main(int argc, char** argv)
   GlobalState::get_instance()->delete_instance();
   FontManager::get_instance()->delete_instance();
   TextureManager::get_instance()->delete_instance();
+  CursorManager::get_instance()->delete_instance();
   SingletonRenderer::get_instance()->delete_instance();
   SDL_Quit();
 
