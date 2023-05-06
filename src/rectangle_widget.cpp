@@ -1,5 +1,4 @@
 #include "../include/rectangle_widget.hpp"
-#include <SDL2/SDL_render.h>
 #include "../include/singleton_renderer.hpp"
 
 RectangleWidget::RectangleWidget() {}
