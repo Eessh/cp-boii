@@ -21,14 +21,11 @@ void FontManager::create_instance()
 {
   if(_instance != nullptr)
   {
-    log_trace("Font Manager already exists, use FontManager::get_instance()");
+    log_warn("Font Manager instance already exists, use FontManager::get_instance()");
     return;
   }
-  else
-  {
-    log_info("Creating Font Manager...");
-    _instance = new FontManager();
-  }
+  log_info("Creating Font Manager...");
+  _instance = new FontManager();
 }
 
 void FontManager::delete_instance()

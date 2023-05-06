@@ -3,6 +3,7 @@
 //
 
 #include "../include/editor_view.hpp"
+#include "../include/cursor_manager.hpp"
 #include <iostream>
 #include "../log-boii/log_boii.h"
 
@@ -20,6 +21,9 @@ EditorView::EditorView()
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _animation_scroll_offset_x(0.0f)
+  , _animation_scroll_offset_y(0.0f)
+  , _animation_happening(false)
   , _buffer("")
 {
   std::pair<const unsigned int&, const unsigned int&> character_dimensions =
@@ -42,6 +46,9 @@ EditorView::EditorView(const std::string& text)
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _animation_scroll_offset_x(0.0f)
+  , _animation_scroll_offset_y(0.0f)
+  , _animation_happening(false)
   , _buffer(text)
 {
   std::pair<const unsigned int&, const unsigned int&> character_dimensions =
@@ -64,6 +71,9 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _animation_scroll_offset_x(0.0f)
+  , _animation_scroll_offset_y(0.0f)
+  , _animation_happening(false)
   , _buffer(buffer)
 {
   std::pair<const unsigned int&, const unsigned int&> character_dimensions =
@@ -131,6 +141,11 @@ Result<const SDL_Color&, std::string>
 EditorView::line_number_active_background() const
 {
   return Ok<const SDL_Color&>(_line_number_active_background);
+}
+
+Result<bool, std::string> EditorView::animation_happening() const
+{
+  return Ok(_animation_happening);
 }
 
 Result<bool, std::string> EditorView::set_x(const int& x)
@@ -226,6 +241,23 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
       _height = event.window.data2;
     }
     return Ok(true);
+  }
+  case SDL_MOUSEMOTION: {
+    if(!point_lies_inside(event.motion.x, event.motion.y))
+    {
+      return Ok(false);
+    }
+    int line_numbers_view_width =
+      static_cast<int>(
+        std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
+      _character_width;
+    if (event.motion.x <= line_numbers_view_width) {
+      CursorManager::get_instance()->set_arrow();
+    }
+    else {
+      CursorManager::get_instance()->set_ibeam();
+    }
+    break;
   }
   case SDL_MOUSEBUTTONDOWN: {
     if(!point_lies_inside(event.button.x, event.button.y))

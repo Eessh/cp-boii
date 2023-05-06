@@ -38,6 +38,7 @@ public:
   line_number_active_foreground() const;
   [[nodiscard]] Result<const SDL_Color&, std::string>
   line_number_active_background() const;
+  [[nodiscard]] Result<bool, std::string> animation_happening() const;
 
   //  Setters
   Result<bool, std::string> set_x(const int& x);
@@ -71,6 +72,8 @@ private:
     _line_number_foreground, _line_number_background,
     _line_number_active_foreground, _line_number_active_background;
   int _scroll_offset_x, _scroll_offset_y;
+  float _animation_scroll_offset_x, _animation_scroll_offset_y;
+  bool _animation_happening;
   VectorBuffer _buffer;
 
   int _character_width, _character_height;

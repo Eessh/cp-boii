@@ -14,6 +14,7 @@
 #include "../include/vertical_view_widget.hpp"
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
+#include "../include/cursor_manager.hpp"
 #ifdef _WIN64
 #include "SDL_syswm.h"
 //define something for Windows (64-bit only)
@@ -77,6 +78,9 @@ int main(int argc, char** argv)
   TextureManager::create_instance();
   TextureManager::get_instance()->load_alphabet_char_textures();
 
+  CursorManager::create_instance();
+  CursorManager::get_instance()->initialize();
+
   //  VectorBuffer buffer(*contents);
 
   //  VerticalViewWidget widget;
@@ -109,7 +113,7 @@ int main(int argc, char** argv)
 
   while(running)
   {
-    if(SDL_WaitEvent(&event))
+    if(!editor_view_widget.animation_happening().ok_value() && SDL_WaitEvent(&event))
     {
       if(event.type == SDL_QUIT)
       {
