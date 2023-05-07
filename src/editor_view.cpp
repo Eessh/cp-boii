@@ -362,9 +362,9 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       //      Scrolling down
 #ifdef DEBUG
-      log_info("Scrolling down");
+      log_info("Scrolling down, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y += 1;
+      _scroll_offset_y += abs(event.wheel.y);
       if(_scroll_offset_y > 0)
       {
         _scroll_offset_y = 0;
@@ -374,9 +374,9 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       //      Scroll up
 #ifdef DEBUG
-      log_info("Scrolling up");
+      log_info("Scrolling up, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y -= 1;
+      _scroll_offset_y -= abs(event.wheel.y);
       int buffer_height = (int)(_character_height * _buffer.size());
       if(_scroll_offset_y * _character_height <= -buffer_height + _height)
       {
