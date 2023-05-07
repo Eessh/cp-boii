@@ -55,9 +55,10 @@ void FontManager::load_default_font(unsigned int font_size)
   log_info("Loading default font: "
            "../../assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf...");
   TTF_Font* default_font =
-    // TTF_OpenFont("C:/Windows/Fonts/consola.ttf", font_size);
-    TTF_OpenFont("assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf",
-                 font_size);
+//     TTF_OpenFont("C:/Windows/Fonts/consola.ttf", font_size);
+//    TTF_OpenFont("assets/fonts/NotoSansMono/NotoSansMono-Regular.ttf",
+//                 font_size);
+    TTF_OpenFont("assets/fonts/JetBrainsMono-2.304/fonts/ttf/JetBrainsMonoNL-Regular.ttf", static_cast<int>(font_size));
   if(!default_font)
   {
     log_fatal("Error while loading default font: %s", TTF_GetError());
