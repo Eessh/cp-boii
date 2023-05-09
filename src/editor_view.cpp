@@ -281,7 +281,7 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
           std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
         _character_width;
       int line_number =
-        (event.button.y / _character_height) + -_scroll_offset_y;
+        (event.button.y/_character_height) - _scroll_offset_y/_character_height;
       if(event.button.x <= line_numbers_view_width)
       {
         _buffer.set_cursor_coords(line_number, -1);
@@ -380,7 +380,7 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 #ifdef DEBUG
       log_info("Scrolling down, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y += abs(event.wheel.y);
+      _scroll_offset_y += abs(event.wheel.y)*_character_height;
       if(_scroll_offset_y > 0)
       {
         _scroll_offset_y = 0;
@@ -392,12 +392,15 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 #ifdef DEBUG
       log_info("Scrolling up, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y -= abs(event.wheel.y);
+      _scroll_offset_y -= abs(event.wheel.y)*_character_height;
       int buffer_height = (int)(_character_height * _buffer.size());
-      if(_scroll_offset_y * _character_height <= -buffer_height + _height)
-      {
-        _scroll_offset_y = -buffer_height / _character_height +
-                           (_height / _character_height) + 1;
+//      if(_scroll_offset_y * _character_height <= -buffer_height + _height)
+//      {
+//        _scroll_offset_y = -buffer_height / _character_height +
+//                           (_height / _character_height) + 1;
+//      }
+      if (_scroll_offset_y-_height<-buffer_height) {
+        _scroll_offset_y = -buffer_height+_height;
       }
     }
     return Ok(true);
@@ -412,7 +415,8 @@ Result<bool, std::string> EditorView::render() const
 
   //  TODO: Shift functionality for drawing lines over here from DirectRender::render_line_view()
 
-  int painter_x = _x, painter_y = _y + _character_height * _scroll_offset_y;
+//  int painter_x = _x, painter_y = _y + _character_height * _scroll_offset_y;
+  int painter_x = _x, painter_y = _y + _scroll_offset_y;
   unsigned int buffer_line_to_render = 0;
   while(painter_y < 0 && abs(painter_y) >= _character_height &&
         buffer_line_to_render < _buffer.size())
@@ -455,7 +459,7 @@ Result<bool, std::string> EditorView::render() const
     (static_cast<int>(max_line_number_str.length()) + _scroll_offset_x +
      cursor_coords.second + 1) *
       _character_width,
-    (_scroll_offset_y + cursor_coords.first) * _character_height,
+    (_scroll_offset_y/_character_height + cursor_coords.first) * _character_height + _scroll_offset_y%_character_height,
     2,
     _character_height,
     _foreground);
@@ -470,8 +474,7 @@ Result<bool, std::string> EditorView::render() const
   int scrollbar_height =
     static_cast<int>(height_ratio * static_cast<float>(_height));
   int scrollbar_y =
-    static_cast<int>(static_cast<float>(-_scroll_offset_y) *
-                     static_cast<float>(_character_height) * height_ratio);
+    static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
   //  _ = DirectRender::render_filled_semicircle(
   //    _x + _width - 8,
   //    _y + 5,
