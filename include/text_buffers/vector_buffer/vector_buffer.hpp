@@ -20,7 +20,7 @@ class VectorBuffer {
   [[nodiscard]] Result<std::pair<int, int>, std::string> get_cursor_coords() const;
   [[nodiscard]] Result<const std::string&, std::string> get_line(const unsigned int& line_number) const;
   [[nodiscard]] bool has_selection() const;
-  [[nodiscard]] const std::pair<std::pair<int, int>, std::pair<int, int>>& get_selection() const;
+  [[nodiscard]] Result<const std::pair<std::pair<int, int>, std::pair<int, int>>&, std::string> get_selection() const;
   [[nodiscard]] std::string get_line_unsafe(const unsigned int& line_number) const;
   [[nodiscard]] Result<const std::vector<std::string>&, std::string> get_buffer() const;
   [[nodiscard]] int size() const;
@@ -35,6 +35,11 @@ class VectorBuffer {
 
   // Command Processors
   void execute_command(const Command& command, const std::string& insert_str = "");
+  Result<bool, std::string> move_selection_left();
+  Result<bool, std::string> move_selection_right();
+  Result<bool, std::string> move_selection_up();
+  Result<bool, std::string> move_selection_down();
+  void clear_selection();
   void move_cursor_to_word_ending();
 
   private:

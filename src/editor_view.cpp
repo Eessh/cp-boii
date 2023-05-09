@@ -19,6 +19,7 @@ EditorView::EditorView()
   , _line_number_background({0, 0, 0, 255})
   , _line_number_active_foreground({255, 255, 255, 255})
   , _line_number_active_background({0, 0, 0, 0})
+  , _selection_color({64, 64, 64, 64})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
@@ -51,6 +52,7 @@ EditorView::EditorView(const std::string& text)
   , _line_number_background({0, 0, 0, 255})
   , _line_number_active_foreground({255, 255, 255, 255})
   , _line_number_active_background({0, 0, 0, 0})
+  , _selection_color({64, 64, 64, 64})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
@@ -83,6 +85,7 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   , _line_number_background({0, 0, 0, 255})
   , _line_number_active_foreground({255, 255, 255, 255})
   , _line_number_active_background({0, 0, 0, 0})
+  , _selection_color({64, 64, 64, 64})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
@@ -165,6 +168,11 @@ EditorView::line_number_active_background() const
   return Ok<const SDL_Color&>(_line_number_active_background);
 }
 
+Result<const SDL_Color&, std::string> EditorView::selection_color() const
+{
+  return Ok<const SDL_Color&>(_selection_color);
+}
+
 Result<bool, std::string> EditorView::animation_happening() const
 {
   return Ok(_animation_happening);
@@ -242,6 +250,13 @@ Result<bool, std::string> EditorView::set_line_number_active_background(
   return Ok(true);
 }
 
+Result<bool, std::string>
+EditorView::set_selection_color(const SDL_Color& selection_color)
+{
+  _selection_color = selection_color;
+  return Ok(true);
+}
+
 void EditorView::log_buffer() const
 {
   std::cout << "Buffer: {\n";
@@ -276,36 +291,7 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       return Ok(false);
     }
-    if (point_lies_inside_scrollbar(event.motion.x, event.motion.y)) {
-#ifdef DEBUG
-      log_info("Inside scrollbar.");
-#endif
-      CursorManager::get_instance()->set_arrow();
-    }
-    if(_scrollbar_active)
-    {
-      int dy = event.motion.y - _scrollbar_active_instance_y;
-      _scrollbar_active_instance_x = event.motion.x;
-      _scrollbar_active_instance_y = event.motion.y;
-      float height_ratio =
-        static_cast<float>(_height) /
-        static_cast<float>(_buffer.size() * _character_height);
-      int delta_offset =
-        static_cast<int>(height_ratio * static_cast<float>(dy))*50;
-      _scroll_offset_y -= delta_offset;
-      _scrollbar_y =
-        static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
-      if(_scroll_offset_y > 0)
-      {
-        _scroll_offset_y = 0;
-      }
-      int buffer_height = _buffer.size()*_character_height;
-      if(_scroll_offset_y - _height < -buffer_height)
-      {
-        _scroll_offset_y = -buffer_height + _height;
-      }
-      return Ok(true);
-    }
+    //    Setting cursor icon
     int line_numbers_view_width =
       static_cast<int>(
         std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
@@ -314,10 +300,53 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       CursorManager::get_instance()->set_arrow();
     }
-    else if (!point_lies_inside_scrollbar(event.motion.x, event.motion.y))
+    else if(point_lies_inside_scrollbar(event.motion.x, event.motion.y))
+    {
+      CursorManager::get_instance()->set_arrow();
+    }
+    else
     {
       CursorManager::get_instance()->set_ibeam();
     }
+    //    Updating scrollbar
+    if(_scrollbar_active)
+    {
+      int dy = event.motion.y - _scrollbar_active_instance_y;
+      _scrollbar_y += dy;
+      if(_scrollbar_y < 0)
+      {
+        _scrollbar_y = 0;
+        return Ok(false);
+      }
+      if(_scrollbar_y + _scrollbar_height >= _height)
+      {
+        _scrollbar_y = _height - _scrollbar_height;
+        return Ok(false);
+      }
+      _scrollbar_active_instance_x = event.motion.x;
+      _scrollbar_active_instance_y = event.motion.y;
+      float height_ratio =
+        static_cast<float>(_buffer.size() * _character_height) /
+        static_cast<float>(_height);
+      _scroll_offset_y =
+        -static_cast<int>(static_cast<float>(_scrollbar_y) * height_ratio);
+#ifdef DEBUG
+      log_debug("dy: %d, scrollbar_y: %d, scroll_offset: %d",
+                dy,
+                _scrollbar_y,
+                _scroll_offset_y);
+#endif
+      if(_scroll_offset_y > 0)
+      {
+        _scroll_offset_y = 0;
+      }
+      int buffer_height = _buffer.size() * _character_height;
+      if(abs(_scroll_offset_y) + _height > buffer_height)
+      {
+        _scroll_offset_y = -buffer_height + _height;
+      }
+    }
+
     return Ok(true);
   }
   case SDL_MOUSEBUTTONDOWN: {
@@ -338,6 +367,9 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     if(event.button.button == SDL_BUTTON_LEFT)
     {
       //      left click
+      //      Clearing buffer selection
+      _buffer.clear_selection();
+
       int line_numbers_view_width =
         static_cast<int>(
           std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
@@ -383,67 +415,93 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
               event.key.keysym.scancode,
               SDL_GetKeyName(event.key.keysym.sym));
 #endif
-    if(event.key.keysym.sym == SDLK_UP)
+    const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
+    if(keyboard_state[SDL_SCANCODE_LEFT])
     {
-      _buffer.execute_command(Command::MOVE_CURSOR_UP);
-      std::pair<int, int> cursor_coords =
-        _buffer.get_cursor_coords().ok_value();
-      if(cursor_coords.first < -_scroll_offset_y)
+      if(keyboard_state[SDL_SCANCODE_LCTRL] ||
+         keyboard_state[SDL_SCANCODE_RCTRL])
       {
-        _scroll_offset_y += 1;
+        _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
       }
-      if(cursor_coords.first + _scroll_offset_y < 1)
+      else if(keyboard_state[SDL_SCANCODE_LSHIFT] ||
+              keyboard_state[SDL_SCANCODE_RSHIFT])
       {
-        _scroll_offset_y = -cursor_coords.first;
-      }
-    }
-    else if(event.key.keysym.sym == SDLK_DOWN)
-    {
-      _buffer.execute_command(Command::MOVE_CURSOR_DOWN);
-      std::pair<int, int> cursor_coords =
-        _buffer.get_cursor_coords().ok_value();
-      int lines_fitting = _height / _character_height;
-      if(cursor_coords.first + _scroll_offset_y > lines_fitting - 1)
-      {
-        _scroll_offset_y -= 1;
-      }
-      if(cursor_coords.first + _scroll_offset_y < 1)
-      {
-        _scroll_offset_y = -cursor_coords.first;
-      }
-    }
-    else
-    {
-      //      TODO: handle dis
-      const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
-      if(keyboard_state[SDL_SCANCODE_LEFT])
-      {
-        if(keyboard_state[SDL_SCANCODE_LCTRL] ||
-           keyboard_state[SDL_SCANCODE_RCTRL])
-        {
-          _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
-        }
-        else
-        {
-          _buffer.execute_command(Command::MOVE_CURSOR_BACK);
-        }
-      }
-      else if(keyboard_state[SDL_SCANCODE_RIGHT])
-      {
-        if(keyboard_state[SDL_SCANCODE_LCTRL] ||
-           keyboard_state[SDL_SCANCODE_RCTRL])
-        {
-          _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
-        }
-        else
-        {
-          _buffer.execute_command(Command::MOVE_CURSOR_FORWARD);
-        }
+        _buffer.move_selection_left();
       }
       else
       {
-        //        TODO
+        _buffer.execute_command(Command::MOVE_CURSOR_BACK);
       }
+    }
+    else if(keyboard_state[SDL_SCANCODE_RIGHT])
+    {
+      if(keyboard_state[SDL_SCANCODE_LCTRL] ||
+         keyboard_state[SDL_SCANCODE_RCTRL])
+      {
+        _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
+      }
+      else if(keyboard_state[SDL_SCANCODE_LSHIFT] ||
+              keyboard_state[SDL_SCANCODE_RSHIFT])
+      {
+        _buffer.move_selection_right();
+      }
+      else
+      {
+        _buffer.execute_command(Command::MOVE_CURSOR_FORWARD);
+      }
+    }
+    else if(keyboard_state[SDL_SCANCODE_UP])
+    {
+      if(keyboard_state[SDL_SCANCODE_LSHIFT] ||
+         keyboard_state[SDL_SCANCODE_RSHIFT])
+      {
+        _buffer.move_selection_up();
+      }
+      else
+      {
+        _buffer.execute_command(Command::MOVE_CURSOR_UP);
+        std::pair<int, int> cursor_coords =
+          _buffer.get_cursor_coords().ok_value();
+        if(cursor_coords.first < -_scroll_offset_y)
+        {
+          _scroll_offset_y += 1;
+        }
+        if(cursor_coords.first + _scroll_offset_y < 1)
+        {
+          _scroll_offset_y = -cursor_coords.first;
+        }
+      }
+    }
+    else if(keyboard_state[SDL_SCANCODE_DOWN])
+    {
+      if(keyboard_state[SDL_SCANCODE_LSHIFT] ||
+         keyboard_state[SDL_SCANCODE_RSHIFT])
+      {
+        _buffer.move_selection_down();
+      }
+      else
+      {
+        _buffer.execute_command(Command::MOVE_CURSOR_DOWN);
+        std::pair<int, int> cursor_coords =
+          _buffer.get_cursor_coords().ok_value();
+        int lines_fitting = _height / _character_height;
+        if(cursor_coords.first + _scroll_offset_y > lines_fitting - 1)
+        {
+          _scroll_offset_y -= 1;
+        }
+        if(cursor_coords.first + _scroll_offset_y < 1)
+        {
+          _scroll_offset_y = -cursor_coords.first;
+        }
+      }
+    }
+    else if(keyboard_state[SDL_SCANCODE_ESCAPE])
+    {
+      _buffer.clear_selection();
+    }
+    else
+    {
+      //        TODO
     }
 
     float height_ratio = static_cast<float>(_height) /
@@ -541,10 +599,49 @@ Result<bool, std::string> EditorView::render() const
     painter_y += _character_height;
   }
 
-  //  Drawing cursor
   std::string max_line_number_str = std::to_string(_buffer.size());
   max_line_number_str.insert(max_line_number_str.begin(), ' ');
   max_line_number_str.push_back(' ');
+
+  //  Drawing selection
+  if(_buffer.has_selection())
+  {
+    auto selection = _buffer.get_selection().ok_value();
+    std::vector<SDL_Rect> selection_rectangles;
+    int i = selection.first.first, j = selection.first.second;
+    while(i <= selection.second.first)
+    {
+      if(i == selection.second.first && j == selection.second.second)
+      {
+        break;
+      }
+#ifdef DEBUG
+      log_debug("Selection rect: (%d, %d)", i, j);
+#endif
+      selection_rectangles.push_back(
+        {_x + static_cast<int>(max_line_number_str.size() + j + 1) *
+                _character_width,
+         _y + (_scroll_offset_y / _character_height + i) * _character_height +
+           _scroll_offset_y % _character_height,
+         _character_width,
+         _character_height});
+      if(j == _buffer.get_line(i).ok_value().size() - 2)
+      {
+        j = -1;
+        i++;
+      }
+      else
+      {
+        j++;
+      }
+    }
+    SingletonRenderer::get_instance()->set_draw_color(_selection_color);
+    SDL_RenderFillRects(SingletonRenderer::get_instance()->renderer(),
+                        selection_rectangles.data(),
+                        static_cast<int>(selection_rectangles.size()));
+  }
+
+  //  Drawing cursor
   std::pair<int, int> cursor_coords = _buffer.get_cursor_coords().ok_value();
   auto _ = DirectRender::render_filled_rectangle(
     (static_cast<int>(max_line_number_str.length()) + _scroll_offset_x +
@@ -562,12 +659,12 @@ Result<bool, std::string> EditorView::render() const
   }
 
   //  Drawing scrollbar
-//  float height_ratio = static_cast<float>(_height) /
-//                       static_cast<float>(_buffer.size() * _character_height);
-//  int scrollbar_height =
-//    static_cast<int>(height_ratio * static_cast<float>(_height));
-//  int scrollbar_y =
-//    static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
+  //  float height_ratio = static_cast<float>(_height) /
+  //                       static_cast<float>(_buffer.size() * _character_height);
+  //  int scrollbar_height =
+  //    static_cast<int>(height_ratio * static_cast<float>(_height));
+  //  int scrollbar_y =
+  //    static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
   _ = DirectRender::render_filled_rectangle(
     _x + _width - _scrollbar_width - _scrollbar_offset,
     _scrollbar_y,

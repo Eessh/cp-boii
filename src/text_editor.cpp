@@ -93,6 +93,7 @@ int main(int argc, char** argv)
   editor_view_widget.set_line_number_background({39, 46, 51, 255});
   editor_view_widget.set_line_number_active_foreground({211, 198, 170, 255});
   editor_view_widget.set_line_number_active_background({39, 46, 51, 255});
+  editor_view_widget.set_selection_color({128, 128, 128, 128});
 
   // Freeing memory occupied by file contents
   delete contents;

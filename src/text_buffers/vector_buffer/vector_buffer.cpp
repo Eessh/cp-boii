@@ -24,7 +24,7 @@ Result<std::pair<int, int>, std::string> VectorBuffer::get_cursor_coords() const
 }
 
 Result<const std::string&, std::string> VectorBuffer::get_line(const unsigned int& line_number) const {
-  if (line_number >= _buffer.size()) {
+  if (line_number < 0 || line_number >= _buffer.size()) {
     return Error<std::string>("Line number out of range!");
   }
   return Ok<const std::string&>(_buffer[line_number]);
@@ -35,9 +35,22 @@ bool VectorBuffer::has_selection() const
   return _has_selection;
 }
 
-const std::pair<std::pair<int, int>, std::pair<int, int>>& VectorBuffer::get_selection() const
+Result<const std::pair<std::pair<int, int>, std::pair<int, int>>&, std::string> VectorBuffer::get_selection() const
 {
-  return _selection;
+  if (!_has_selection) {
+    return Error<std::string>("Buffer has no selection!");
+  }
+  if (_selection.first.first < _selection.second.first) {
+    return Ok<const std::pair<std::pair<int, int>, std::pair<int, int>>&>(_selection);
+  }
+  else if (_selection.first.first == _selection.second.first) {
+    if (_selection.first.second < _selection.second.second) {
+      return Ok<const std::pair<std::pair<int, int>, std::pair<int, int>>&>(_selection);
+    }
+    return Ok<const std::pair<std::pair<int, int>, std::pair<int, int>>&>({_selection.second, _selection.first});
+  }
+  return Ok<const std::pair<std::pair<int, int>, std::pair<int, int>>&>(
+    {_selection.second, _selection.first});
 }
 
 std::string VectorBuffer::get_line_unsafe(const unsigned int& line_number) const
@@ -69,12 +82,13 @@ Result<bool, std::string> VectorBuffer::set_selection(const std::pair<std::pair<
   if (selection.second.first < 0 || selection.second.first > static_cast<int>(_buffer.size())) {
     return Error<std::string>("Selection ending point row is out of bounds!");
   }
-  if (selection.first.second < 0 || selection.first.second >= static_cast<int>(_buffer[selection.first.first].size())) {
+  if (selection.first.second < -1 || selection.first.second >= static_cast<int>(_buffer[selection.first.first].size())) {
     return Error<std::string>("Selection starting point column is out of bounds!");
   }
-  if (selection.second.second < 0 || selection.second.second >= static_cast<int>(_buffer[selection.second.first].size())) {
+  if (selection.second.second < -1 || selection.second.second >= static_cast<int>(_buffer[selection.second.first].size())) {
     return Error<std::string>("Selection ending point column is out of bounds!");
   }
+  _has_selection = true;
   _selection = selection;
   return Ok(true);
 }
@@ -176,7 +190,7 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
     if (_cursor_col == -1) {
       if (_cursor_row != 0) {
         _cursor_row -= 1;
-        _cursor_col = _buffer[_cursor_row].size()-1;
+        _cursor_col = static_cast<int>(_buffer[_cursor_row].size())-1;
         return;
       }
       else {
@@ -242,6 +256,67 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
     break;
   }
   }
+}
+
+Result<bool, std::string> VectorBuffer::move_selection_left()
+{
+  if (!_has_selection) {
+    _has_selection = true;
+    _selection.first = {_cursor_row, _cursor_col};
+  }
+  VectorBuffer::execute_command(Command::MOVE_CURSOR_BACK);
+  _selection.second = {_cursor_row, _cursor_col};
+  if (_selection.first == _selection.second) {
+    _has_selection = false;
+  }
+  return Ok(true);
+}
+
+Result<bool, std::string> VectorBuffer::move_selection_right()
+{
+  if (!_has_selection) {
+    _has_selection = true;
+    _selection.first = {_cursor_row, _cursor_col};
+  }
+  VectorBuffer::execute_command(Command::MOVE_CURSOR_FORWARD);
+  _selection.second = {_cursor_row, _cursor_col};
+  if (_selection.first == _selection.second) {
+    _has_selection = false;
+  }
+  return Ok(true);
+}
+
+Result<bool, std::string> VectorBuffer::move_selection_up()
+{
+  if (!_has_selection) {
+    _has_selection = true;
+    _selection.first = {_cursor_row, _cursor_col};
+  }
+  VectorBuffer::execute_command(Command::MOVE_CURSOR_UP);
+  _selection.second = {_cursor_row, _cursor_col};
+  if (_selection.first == _selection.second) {
+    _has_selection = false;
+  }
+  return Ok(true);
+}
+
+Result<bool, std::string> VectorBuffer::move_selection_down()
+{
+  if (!_has_selection) {
+    _has_selection = true;
+    _selection.first = {_cursor_row, _cursor_col};
+  }
+  VectorBuffer::execute_command(Command::MOVE_CURSOR_DOWN);
+  _selection.second = {_cursor_row, _cursor_col};
+  if (_selection.first == _selection.second) {
+    _has_selection = false;
+  }
+  return Ok(true);
+}
+
+void VectorBuffer::clear_selection()
+{
+  _has_selection = false;
 }
 
 void VectorBuffer::move_cursor_to_word_ending()

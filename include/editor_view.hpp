@@ -38,6 +38,7 @@ public:
   line_number_active_foreground() const;
   [[nodiscard]] Result<const SDL_Color&, std::string>
   line_number_active_background() const;
+  [[nodiscard]] Result<const SDL_Color&, std::string> selection_color() const;
   [[nodiscard]] Result<bool, std::string> animation_happening() const;
 
   //  Setters
@@ -57,6 +58,8 @@ public:
     const SDL_Color& line_number_active_foreground);
   Result<bool, std::string> set_line_number_active_background(
     const SDL_Color& line_number_active_background);
+  Result<bool, std::string>
+  set_selection_color(const SDL_Color& selection_color);
 
   //  Loggers
   void log_buffer() const;
@@ -70,7 +73,8 @@ private:
   int _x, _y, _width, _height;
   SDL_Color _foreground, _background, _active_background,
     _line_number_foreground, _line_number_background,
-    _line_number_active_foreground, _line_number_active_background;
+    _line_number_active_foreground, _line_number_active_background,
+    _selection_color;
   int _scroll_offset_x, _scroll_offset_y;
   int _scrollbar_width, _scrollbar_offset, _scrollbar_y, _scrollbar_height;
   bool _scrollbar_active;
