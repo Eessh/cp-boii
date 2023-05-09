@@ -9,14 +9,15 @@
 
 #include "../SDL2/include/SDL.h"
 
-class CursorManager {
+class CursorManager
+{
 public:
-//  Deleting copy constructor
+  //  Deleting copy constructor
   CursorManager(const CursorManager& cursor_manager) = delete;
-//  Deleting move constructor
+  //  Deleting move constructor
   CursorManager(CursorManager&& cursor_manager) = delete;
-//  Deleting copy operator
-  CursorManager operator = (const CursorManager& cursor_manager) = delete;
+  //  Deleting copy operator
+  CursorManager operator=(const CursorManager& cursor_manager) = delete;
 
   ~CursorManager();
 
@@ -26,7 +27,7 @@ public:
 
   void initialize();
 
-//  Setters
+  //  Setters
   void set_arrow() const;
   void set_ibeam() const;
   void set_loading() const;
@@ -53,7 +54,7 @@ private:
   SDL_Cursor* _hand;
   SDL_Cursor* _drag;
 
-//  Constructors
+  //  Constructors
   CursorManager();
 
   static CursorManager* _instance;

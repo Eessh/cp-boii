@@ -20,6 +20,8 @@ DirectRender::render_rectangle(const int& x,
                          outline_color.a);
   SDL_RenderDrawRect(SingletonRenderer::get_instance()->renderer(),
                      &destination_rect);
+  SDL_SetRenderDrawColor(
+    SingletonRenderer::get_instance()->renderer(), 0, 0, 0, 255);
   return Ok(true);
 }
 
@@ -31,13 +33,117 @@ DirectRender::render_filled_rectangle(const int& x,
                                       const SDL_Color& color)
 {
   SDL_Rect destination_rect{.x = x, .y = y, .w = width, .h = height};
+  if(SDL_SetRenderDrawColor(SingletonRenderer::get_instance()->renderer(),
+                            color.r,
+                            color.g,
+                            color.b,
+                            color.a) < 0)
+  {
+    return Error<std::string>("Unable to set render draw color!");
+  }
+  if(SDL_RenderFillRect(SingletonRenderer::get_instance()->renderer(),
+                        &destination_rect) < 0)
+  {
+    return Error<std::string>("Unable to render filled rect!");
+  }
+  SDL_SetRenderDrawColor(
+    SingletonRenderer::get_instance()->renderer(), 0, 0, 0, 255);
+  return Ok(true);
+}
+
+Result<bool, std::string> DirectRender::render_filled_circle(
+  const int& x, const int& y, const int& radius, const SDL_Color& color)
+{
+  std::vector<SDL_Point> circle_points;
+
+  for(int w = 0; w < radius * 2; w++)
+  {
+    for(int h = 0; h < radius * 2; h++)
+    {
+      int dx = radius - w; // horizontal offset
+      int dy = radius - h; // vertical offset
+      if((dx * dx + dy * dy) <= (radius * radius))
+      {
+        circle_points.push_back({x + dx, y + dy});
+      }
+    }
+  }
+
   SDL_SetRenderDrawColor(SingletonRenderer::get_instance()->renderer(),
                          color.r,
                          color.g,
                          color.b,
                          color.a);
-  SDL_RenderFillRect(SingletonRenderer::get_instance()->renderer(),
-                     &destination_rect);
+  SDL_RenderDrawPoints(SingletonRenderer::get_instance()->renderer(),
+                       circle_points.data(),
+                       static_cast<int>(circle_points.size()));
+  SDL_SetRenderDrawColor(
+    SingletonRenderer::get_instance()->renderer(), 0, 0, 0, 255);
+
+  return Ok(true);
+}
+
+Result<bool, std::string> DirectRender::render_filled_semicircle(
+  const int& x, const int& y, const int& radius, const SDL_Color& color)
+{
+  std::vector<SDL_Point> circle_points;
+
+  for(int w = 0; w < radius * 2; w++)
+  {
+    for(int h = radius; h >= 0; h--)
+    {
+      int dx = radius - w; // horizontal offset
+      int dy = radius - h; // vertical offset
+      if((dx * dx + dy * dy) <= (radius * radius))
+      {
+        circle_points.push_back({x + dx, y + dy});
+      }
+    }
+  }
+
+  SDL_SetRenderDrawColor(SingletonRenderer::get_instance()->renderer(),
+                         color.r,
+                         color.g,
+                         color.b,
+                         color.a);
+  SDL_RenderDrawPoints(SingletonRenderer::get_instance()->renderer(),
+                       circle_points.data(),
+                       static_cast<int>(circle_points.size()));
+  SDL_SetRenderDrawColor(
+    SingletonRenderer::get_instance()->renderer(), 0, 0, 0, 255);
+
+  return Ok(true);
+}
+
+Result<bool, std::string> DirectRender::render_filled_inverted_semicircle(
+  const int& x, const int& y, const int& radius, const SDL_Color& color)
+{
+  std::vector<SDL_Point> circle_points;
+
+  for(int w = 1; w < radius * 2; w++)
+  {
+    for(int h = 0; h <= radius; h++)
+    {
+      int dx = radius - w; // horizontal offset
+      int dy = radius - h; // vertical offset
+      if((dx * dx + dy * dy) <= (radius * radius))
+      {
+        circle_points.push_back({x + dx, y + dy});
+      }
+    }
+  }
+
+  SDL_SetRenderDrawColor(SingletonRenderer::get_instance()->renderer(),
+                         color.r,
+                         color.g,
+                         color.b,
+                         color.a);
+  SDL_RenderDrawPoints(SingletonRenderer::get_instance()->renderer(),
+                       circle_points.data(),
+                       static_cast<int>(circle_points.size()));
+  SDL_SetRenderDrawColor(
+    SingletonRenderer::get_instance()->renderer(), 0, 0, 0, 255);
+
   return Ok(true);
 }
 
@@ -204,4 +310,10 @@ DirectRender::render_line_view(const int& x,
   }
   SDL_DestroyTexture(line_texture);
   return Ok(true);
+}
+
+Result<uint32_t, std::string> DirectRender::rgba_to_hex(const SDL_Color& color)
+{
+  return Ok<uint32_t>(((color.r & 0xff) << 24) + ((color.g & 0xff) << 16) +
+                      ((color.b & 0xff) << 8) + (color.a & 0xff));
 }

@@ -10,6 +10,7 @@
 #include "result.hpp"
 #include "singleton_renderer.hpp"
 #include "texture_manager.hpp"
+//#include "../olive.c/olive.c"
 
 namespace DirectRender
 {
@@ -19,19 +20,36 @@ Result<bool, std::string> render_rectangle(const int& x,
                                            const int& width,
                                            const int& height,
                                            const SDL_Color& outline_color);
+
 Result<bool, std::string> render_filled_rectangle(const int& x,
                                                   const int& y,
                                                   const int& width,
                                                   const int& height,
                                                   const SDL_Color& color);
+
+Result<bool, std::string> render_filled_circle(const int& x,
+                                               const int& y,
+                                               const int& radius,
+                                               const SDL_Color& color);
+
+Result<bool, std::string> render_filled_semicircle(const int& x,
+                                                   const int& y,
+                                                   const int& radius,
+                                                   const SDL_Color& color);
+
+Result<bool, std::string> render_filled_inverted_semicircle(
+  const int& x, const int& y, const int& radius, const SDL_Color& color);
+
 Result<bool, std::string> render_character(const int& x,
                                            const int& y,
                                            const char& character,
                                            const SDL_Color& color);
+
 Result<bool, std::string> render_string(const int& x,
                                         const int& y,
                                         const std::string& text,
                                         const SDL_Color& color);
+
 Result<bool, std::string>
 render_line_view(const int& x,
                  const int& y,
@@ -47,6 +65,8 @@ render_line_view(const int& x,
                  const SDL_Color& line_number_background,
                  const SDL_Color& line_number_active_foreground,
                  const SDL_Color& line_number_active_background);
+
+Result<uint32_t, std::string> rgba_to_hex(const SDL_Color& color);
 
 }; // namespace DirectRender
 

@@ -4,6 +4,8 @@
 #include <vector>
 #define SDL_MAIN_HANDLED
 #include "../SDL2/include/SDL.h"
+#include "../SDL2/include/SDL_syswm.h"
+#include "../include/cursor_manager.hpp"
 #include "../include/editor_view.hpp"
 #include "../include/font_manager.hpp"
 #include "../include/global_state.hpp"
@@ -14,13 +16,6 @@
 #include "../include/vertical_view_widget.hpp"
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
-#include "../include/cursor_manager.hpp"
-#ifdef _WIN64
-#include "SDL_syswm.h"
-//define something for Windows (64-bit only)
-#elif _WIN32
-#include "SDL_syswm.h"
-#endif
 
 std::vector<std::string>* read_file(const std::string& file_path);
 
@@ -81,39 +76,40 @@ int main(int argc, char** argv)
   CursorManager::create_instance();
   CursorManager::get_instance()->initialize();
 
-  //  VectorBuffer buffer(*contents);
+  VectorBuffer buffer(*contents);
 
-  //  VerticalViewWidget widget;
-  //  widget.x() = 0;
-  //  widget.y() = 0;
-  //  widget.width() = 1080;
-  //  widget.height() = 720;
+  VerticalViewWidget widget;
+  widget.x() = 0;
+  widget.y() = 0;
+  widget.width() = 1080;
+  widget.height() = 720;
 
-  EditorView editor_view_widget(*contents);
-  //  editor_view_widget.log_buffer();
-  editor_view_widget.set_x(0);
-  editor_view_widget.set_y(0);
-  editor_view_widget.set_width((int)config.width);
-  editor_view_widget.set_height((int)config.height);
-  editor_view_widget.set_foreground({211, 198, 170, 0});
-  editor_view_widget.set_background({30, 35, 38, 255});
-  editor_view_widget.set_active_background({39, 46, 51, 255});
-  editor_view_widget.set_line_number_foreground({73, 81, 86, 255});
-  editor_view_widget.set_line_number_background({39, 46, 51, 255});
-  editor_view_widget.set_line_number_active_foreground({211, 198, 170, 255});
-  editor_view_widget.set_line_number_active_background({39, 46, 51, 255});
+  //  EditorView editor_view_widget(*contents);
+  //  //  editor_view_widget.log_buffer();
+  //  editor_view_widget.set_x(0);
+  //  editor_view_widget.set_y(0);
+  //  editor_view_widget.set_width((int)config.width);
+  //  editor_view_widget.set_height((int)config.height);
+  //  editor_view_widget.set_foreground({211, 198, 170, 0});
+  //  editor_view_widget.set_background({30, 35, 38, 255});
+  //  editor_view_widget.set_active_background({39, 46, 51, 255});
+  //  editor_view_widget.set_line_number_foreground({73, 81, 86, 255});
+  //  editor_view_widget.set_line_number_background({39, 46, 51, 255});
+  //  editor_view_widget.set_line_number_active_foreground({211, 198, 170, 255});
+  //  editor_view_widget.set_line_number_active_background({39, 46, 51, 255});
 
   // Freeing memory occupied by file contents
   delete contents;
 
   bool running = true;
   SDL_Event event;
+  //  Uint32 last_time = SDL_GetTicks(), current_time = last_time;
 
   // GlobalState::create_instance();
 
   while(running)
   {
-    if(!editor_view_widget.animation_happening().ok_value() && SDL_WaitEvent(&event))
+    if(SDL_WaitEvent(&event))
     {
       if(event.type == SDL_QUIT)
       {
@@ -124,56 +120,67 @@ int main(int argc, char** argv)
       {
         if(event.key.keysym.sym == SDLK_UP)
         {
-          //          buffer.execute_command(Command::MOVE_CURSOR_UP);
+          buffer.execute_command(Command::MOVE_CURSOR_UP);
         }
         else if(event.key.keysym.sym == SDLK_DOWN)
         {
-          //          buffer.execute_command(Command::MOVE_CURSOR_DOWN);
+          buffer.execute_command(Command::MOVE_CURSOR_DOWN);
         }
       }
-      //      widget.process_sdl_event(event);
-      auto _ = editor_view_widget.process_sdl_event(event);
+      widget.process_sdl_event(event);
+      //      auto _ = editor_view_widget.process_sdl_event(event);
     }
+
+    //    current_time = SDL_GetTicks();
+    //    float delta_time = (float)(current_time-last_time)/1000.0f;
+    //    last_time = current_time;
 
     // GlobalState::get_instance()->update_time();
 
     SingletonRenderer::get_instance()->clear();
 
-    //    widget.remove_all_children();
-    //    std::vector<std::string> text_buffer;
-    //    std::pair<int, int> cursor_coords;
-    //    {
-    //      auto result = buffer.get_buffer();
-    //      if (result.error()) {
-    //        //      TODO: handle dis
-    //        return 1;
-    //      }
-    //      text_buffer = result.take_ok_value();
-    //    }
-    //    {
-    //      auto result = buffer.get_cursor_coords();
-    //      if (result.error()) {
-    ////        TODO: handle dis
-    //        return 1;
-    //      }
-    //      cursor_coords = result.take_ok_value();
-    //    }
-    //    for(int i = 0; i < text_buffer.size(); i++)
-    //    {
-    //      StringWidget* swidget = new StringWidget(text_buffer[i]);
-    //      if(i == cursor_coords.first)
-    //      {
-    //        swidget->foreground_color() = {0, 255, 0, 255};
-    //      }
-    //      widget.add_child(swidget);
-    //    }
-    //    widget.render();
-
-    Result<bool, std::string> _ = editor_view_widget.render();
-    if(_.error())
+    widget.remove_all_children();
+    std::vector<std::string> text_buffer;
+    std::pair<int, int> cursor_coords;
     {
-      log_fatal("Unable to render editor view widget!");
+      auto result = buffer.get_buffer();
+      if(result.error())
+      {
+        //      TODO: handle dis
+        return 1;
+      }
+      text_buffer = result.take_ok_value();
     }
+    {
+      auto result = buffer.get_cursor_coords();
+      if(result.error())
+      {
+        //        TODO: handle dis
+        return 1;
+      }
+      cursor_coords = result.take_ok_value();
+    }
+    for(int i = 0; i < text_buffer.size(); i++)
+    {
+      StringWidget* swidget = new StringWidget(text_buffer[i]);
+      if(i == cursor_coords.first)
+      {
+        swidget->foreground_color() = {0, 255, 0, 255};
+      }
+      widget.add_child(swidget);
+    }
+    widget.render();
+
+    //    Result<bool, std::string> _ = editor_view_widget.render();
+    //    if(_.error())
+    //    {
+    //      log_fatal("Unable to render editor view widget!");
+    //    }
+
+    //        Uint32 frame_time = SDL_GetTicks() - last_time;
+    //        if (frame_time < 16) {
+    //          SDL_Delay(16 - frame_time);
+    //        }
 
     SingletonRenderer::get_instance()->present();
   }

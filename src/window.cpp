@@ -1,10 +1,10 @@
 #include "../include/window.hpp"
 #include "../log-boii/log_boii.h"
 #ifdef _WIN64
-#include "SDL_syswm.h"
+#  include "SDL_syswm.h"
 //define something for Windows (64-bit only)
 #elif _WIN32
-#include "SDL_syswm.h"
+#  include "SDL_syswm.h"
 #endif
 
 Window::Window(const std::string& title,

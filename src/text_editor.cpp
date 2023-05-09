@@ -1,5 +1,11 @@
+#include <fstream>
+#include <string>
+#include <vector>
 #define SDL_MAIN_HANDLED
 #include "../SDL2/include/SDL.h"
+#include "../SDL2/include/SDL_syswm.h"
+#include "../include/cursor_manager.hpp"
+#include "../include/editor_view.hpp"
 #include "../include/font_manager.hpp"
 #include "../include/singleton_renderer.hpp"
 #include "../include/string_widget.hpp"
@@ -13,57 +19,86 @@ std::vector<std::string>* read_file(const std::string& file_path);
 
 int main(int argc, char** argv)
 {
+  //  Checking arguments
+  if(argc < 2)
+  {
+    log_fatal("Error: No file is provided as an argument");
+    log_info("Usage: cp-boii.exe <file_path>");
+    return 1;
+  }
 
-  // if(argc < 2)
-  // {
-  //   log_fatal("Error: No file is provided as an argument");
-  //   log_info("Usage: cp-boii.exe <file_path>");
-  //   return 1;
-  // }
+  //  Loading file
+  std::string file_path(argv[1]);
+  std::vector<std::string>* contents = read_file(file_path);
+  if(!contents)
+  {
+    log_fatal("Unable to find file: %s", file_path.c_str());
+    return 1;
+  }
 
+  //  Initializing SDL
   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
   {
     log_fatal("Error while initializing SDL2: %s", SDL_GetError());
     return 1;
   }
 
+  //  Initializing FontManager
   FontManager::create_instance();
   FontManager::get_instance()->initialize();
   FontManager::get_instance()->load_default_font(16);
 
-  WindowConfig config("Text Editor",
+  //  Initializing CursorManager
+  CursorManager::create_instance();
+  CursorManager::get_instance()->initialize();
+
+  //  Window config
+  WindowConfig config("CP Boii",
                       1080,
                       720,
                       SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
                         SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_INPUT_FOCUS |
                         SDL_WINDOW_MOUSE_FOCUS);
 
+  //  Window
+  //  setting dark mode for windows
+  //  setting window icon
   Window window(config);
+#ifdef _WIN64
+  window.set_dark_mode();
+#elif _WIN32
+  window.set_dark_mode();
+#endif
+  window.set_icon("assets/icons/fire.bmp");
 
+  //  SingleRenderer creation
   SingletonRenderer::create_instance(
     window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_SOFTWARE);
 
+  //  Initializing TextureManager
   TextureManager::create_instance();
+  //  loading alphabet chars should be done only after initializing SingletonRenderer
   TextureManager::get_instance()->load_alphabet_char_textures();
 
-  std::string file_path(argv[1]);
-  std::vector<std::string>* contents = read_file(file_path);
-
-  VectorBuffer buffer(*contents);
-
-  VerticalViewWidget widget;
-  widget.x() = 0;
-  widget.y() = 0;
-  widget.width() = 1080;
-  widget.height() = 720;
+  //  EditorView widget
+  EditorView editor_view_widget(*contents);
+  editor_view_widget.set_x(0);
+  editor_view_widget.set_y(0);
+  editor_view_widget.set_width((int)config.width);
+  editor_view_widget.set_height((int)config.height);
+  editor_view_widget.set_foreground({211, 198, 170, 255});
+  editor_view_widget.set_background({30, 35, 38, 255});
+  editor_view_widget.set_active_background({39, 46, 51, 255});
+  editor_view_widget.set_line_number_foreground({73, 81, 86, 255});
+  editor_view_widget.set_line_number_background({39, 46, 51, 255});
+  editor_view_widget.set_line_number_active_foreground({211, 198, 170, 255});
+  editor_view_widget.set_line_number_active_background({39, 46, 51, 255});
 
   // Freeing memory occupied by file contents
-  // delete contents;
+  delete contents;
 
   bool running = true;
   SDL_Event event;
-
-  // GlobalState::create_instance();
 
   while(running)
   {
@@ -72,49 +107,26 @@ int main(int argc, char** argv)
       if(event.type == SDL_QUIT)
       {
         running = false;
-        continue;
+        break;
       }
-      if(event.type == SDL_KEYDOWN)
-      {
-        if(event.key.keysym.sym == SDLK_UP)
-        {
-          // buffer.execute_command(Command::MOVE_CURSOR_UP);
-          widget.background_color() = {255, 255, 255, 255};
-        }
-        else if(event.key.keysym.sym == SDLK_DOWN)
-        {
-          // buffer.execute_command(Command::MOVE_CURSOR_DOWN);
-          widget.background_color() = {0, 0, 0, 255};
-        }
-      }
-      widget.process_sdl_event(event);
+      auto _ = editor_view_widget.process_sdl_event(event);
     }
-
-    // GlobalState::get_instance()->update_time();
 
     SingletonRenderer::get_instance()->clear();
 
-    widget.remove_all_children();
-    std::vector<std::string> text_buffer = buffer.get_buffer();
-    std::pair<int, int> cursor_coords = buffer.get_cursor_coords();
-    for(int i = 0; i < text_buffer.size(); i++)
+    Result<bool, std::string> _ = editor_view_widget.render();
+    if(_.error())
     {
-      StringWidget* swidget = new StringWidget(text_buffer[i]);
-      if(i == cursor_coords.first)
-      {
-        swidget->foreground_color() = {0, 255, 0, 255};
-      }
-      widget.add_child(swidget);
+      log_fatal("Unable to render editor view widget!");
     }
-    widget.render();
 
     SingletonRenderer::get_instance()->present();
   }
 
   log_info("Cleaning up resources ...");
-  // GlobalState::get_instance()->delete_instance();
-  FontManager::get_instance()->delete_instance();
+  CursorManager::get_instance()->delete_instance();
   TextureManager::get_instance()->delete_instance();
+  FontManager::get_instance()->delete_instance();
   SingletonRenderer::get_instance()->delete_instance();
   SDL_Quit();
 
@@ -126,7 +138,7 @@ std::vector<std::string>* read_file(const std::string& file_path)
   std::ifstream file(file_path);
   if(file.is_open())
   {
-    std::vector<std::string>* contents = new std::vector<std::string>();
+    auto* contents = new std::vector<std::string>();
     while(file.good())
     {
       contents->push_back("");
@@ -135,5 +147,5 @@ std::vector<std::string>* read_file(const std::string& file_path)
     return contents;
   }
   log_error("Unable to open file: %s", file_path.c_str());
-  return {};
+  return nullptr;
 }

@@ -3,8 +3,8 @@
 //
 
 #include "../include/editor_view.hpp"
-#include "../include/cursor_manager.hpp"
 #include <iostream>
+#include "../include/cursor_manager.hpp"
 #include "../log-boii/log_boii.h"
 
 EditorView::EditorView()
@@ -81,8 +81,9 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   _character_width = (int)character_dimensions.first;
   _character_height = (int)character_dimensions.second;
 #ifdef DEBUG
-  log_debug(
-    "character width, height: %d, %d", _character_width, _character_height);
+  log_debug("Font character width, height: %d, %d",
+            _character_width,
+            _character_height);
 #endif
 }
 
@@ -251,10 +252,12 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
       static_cast<int>(
         std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
       _character_width;
-    if (event.motion.x <= line_numbers_view_width) {
+    if(event.motion.x <= line_numbers_view_width)
+    {
       CursorManager::get_instance()->set_arrow();
     }
-    else {
+    else
+    {
       CursorManager::get_instance()->set_ibeam();
     }
     break;
@@ -435,7 +438,7 @@ Result<bool, std::string> EditorView::render() const
   max_line_number_str.insert(max_line_number_str.begin(), ' ');
   max_line_number_str.push_back(' ');
   std::pair<int, int> cursor_coords = _buffer.get_cursor_coords().ok_value();
-  DirectRender::render_filled_rectangle(
+  auto _ = DirectRender::render_filled_rectangle(
     (static_cast<int>(max_line_number_str.length()) + _scroll_offset_x +
      cursor_coords.second + 1) *
       _character_width,
@@ -443,7 +446,43 @@ Result<bool, std::string> EditorView::render() const
     2,
     _character_height,
     _foreground);
-  SingletonRenderer::get_instance()->remove_clip_rect();
+  if(_.error())
+  {
+    return _;
+  }
+
+  //  Drawing scrollbar
+  float height_ratio = static_cast<float>(_height) /
+                       static_cast<float>(_buffer.size() * _character_height);
+  int scrollbar_height =
+    static_cast<int>(height_ratio * static_cast<float>(_height));
+  int scrollbar_y =
+    static_cast<int>(static_cast<float>(-_scroll_offset_y) *
+                     static_cast<float>(_character_height) * height_ratio);
+  //  _ = DirectRender::render_filled_semicircle(
+  //    _x + _width - 8,
+  //    _y + 5,
+  //    5,
+  //    {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
+  //  if (_.error()) {
+  //    return _;
+  //  }
+  _ = DirectRender::render_filled_rectangle(
+    _x + _width - 12,
+    scrollbar_y,
+    10,
+    scrollbar_height,
+    {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
+  if(_.error())
+  {
+    return _;
+  }
+  //  _ = DirectRender::render_filled_inverted_semicircle(_x+_width-7, _y+5+100, 5, {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
+  //  if (_.error()) {
+  //    return _;
+  //  }
+  //  SingletonRenderer::get_instance()->remove_clip_rect();
+
   return Ok(true);
 }
 

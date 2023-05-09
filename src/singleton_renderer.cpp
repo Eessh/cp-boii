@@ -15,6 +15,7 @@ SingletonRenderer::SingletonRenderer(const Window& window,
     _ok = false;
     // TODO: handle dis
   }
+  SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
 }
 
 SingletonRenderer::~SingletonRenderer()
