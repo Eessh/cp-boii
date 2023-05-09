@@ -23,6 +23,11 @@ EditorView::EditorView()
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
   , _scrollbar_offset(2)
+  , _scrollbar_y(0)
+  , _scrollbar_height(0)
+  , _scrollbar_active(false)
+  , _scrollbar_active_instance_x(0)
+  , _scrollbar_active_instance_y(0)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -50,6 +55,11 @@ EditorView::EditorView(const std::string& text)
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
   , _scrollbar_offset(2)
+  , _scrollbar_y(0)
+  , _scrollbar_height(0)
+  , _scrollbar_active(false)
+  , _scrollbar_active_instance_x(0)
+  , _scrollbar_active_instance_y(0)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -77,6 +87,11 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   , _scroll_offset_y(0)
   , _scrollbar_width(10)
   , _scrollbar_offset(2)
+  , _scrollbar_y(0)
+  , _scrollbar_height(0)
+  , _scrollbar_active(false)
+  , _scrollbar_active_instance_x(0)
+  , _scrollbar_active_instance_y(0)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -247,12 +262,49 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
       _width = event.window.data1;
       _height = event.window.data2;
     }
+
+    float height_ratio = static_cast<float>(_height) /
+                         static_cast<float>(_buffer.size() * _character_height);
+    _scrollbar_height =
+      static_cast<int>(height_ratio * static_cast<float>(_height));
+    _scrollbar_y =
+      static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
     return Ok(true);
   }
   case SDL_MOUSEMOTION: {
     if(!point_lies_inside(event.motion.x, event.motion.y))
     {
       return Ok(false);
+    }
+    if (point_lies_inside_scrollbar(event.motion.x, event.motion.y)) {
+#ifdef DEBUG
+      log_info("Inside scrollbar.");
+#endif
+      CursorManager::get_instance()->set_arrow();
+    }
+    if(_scrollbar_active)
+    {
+      int dy = event.motion.y - _scrollbar_active_instance_y;
+      _scrollbar_active_instance_x = event.motion.x;
+      _scrollbar_active_instance_y = event.motion.y;
+      float height_ratio =
+        static_cast<float>(_height) /
+        static_cast<float>(_buffer.size() * _character_height);
+      int delta_offset =
+        static_cast<int>(height_ratio * static_cast<float>(dy))*50;
+      _scroll_offset_y -= delta_offset;
+      _scrollbar_y =
+        static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
+      if(_scroll_offset_y > 0)
+      {
+        _scroll_offset_y = 0;
+      }
+      int buffer_height = _buffer.size()*_character_height;
+      if(_scroll_offset_y - _height < -buffer_height)
+      {
+        _scroll_offset_y = -buffer_height + _height;
+      }
+      return Ok(true);
     }
     int line_numbers_view_width =
       static_cast<int>(
@@ -262,16 +314,26 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       CursorManager::get_instance()->set_arrow();
     }
-    else
+    else if (!point_lies_inside_scrollbar(event.motion.x, event.motion.y))
     {
       CursorManager::get_instance()->set_ibeam();
     }
-    break;
+    return Ok(true);
   }
   case SDL_MOUSEBUTTONDOWN: {
     if(!point_lies_inside(event.button.x, event.button.y))
     {
       return Ok(false);
+    }
+    if(point_lies_inside_scrollbar(event.button.x, event.button.y))
+    {
+#ifdef DEBUG
+      log_info("Scrollbar active.");
+#endif
+      _scrollbar_active = true;
+      _scrollbar_active_instance_x = event.button.x;
+      _scrollbar_active_instance_y = event.button.y;
+      return Ok(true);
     }
     if(event.button.button == SDL_BUTTON_LEFT)
     {
@@ -280,8 +342,8 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
         static_cast<int>(
           std::string(" " + std::to_string(_buffer.size()) + " ").size()) *
         _character_width;
-      int line_number =
-        (event.button.y/_character_height) - _scroll_offset_y/_character_height;
+      int line_number = (event.button.y / _character_height) -
+                        _scroll_offset_y / _character_height;
       if(event.button.x <= line_numbers_view_width)
       {
         _buffer.set_cursor_coords(line_number, -1);
@@ -310,9 +372,16 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     }
     return Ok(true);
   }
+  case SDL_MOUSEBUTTONUP: {
+    _scrollbar_active = false;
+    return Ok(true);
+  }
   case SDL_KEYDOWN: {
 #ifdef DEBUG
-    log_debug("Key code: %d, scancode: %d, name: %s", event.key.keysym.sym, event.key.keysym.scancode, SDL_GetKeyName(event.key.keysym.sym));
+    log_debug("Key code: %d, scancode: %d, name: %s",
+              event.key.keysym.sym,
+              event.key.keysym.scancode,
+              SDL_GetKeyName(event.key.keysym.sym));
 #endif
     if(event.key.keysym.sym == SDLK_UP)
     {
@@ -347,26 +416,42 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     {
       //      TODO: handle dis
       const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
-      if (keyboard_state[SDL_SCANCODE_LEFT]) {
-        if (keyboard_state[SDL_SCANCODE_LCTRL] || keyboard_state[SDL_SCANCODE_RCTRL]) {
+      if(keyboard_state[SDL_SCANCODE_LEFT])
+      {
+        if(keyboard_state[SDL_SCANCODE_LCTRL] ||
+           keyboard_state[SDL_SCANCODE_RCTRL])
+        {
           _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
         }
-        else {
+        else
+        {
           _buffer.execute_command(Command::MOVE_CURSOR_BACK);
         }
       }
-      else if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-        if (keyboard_state[SDL_SCANCODE_LCTRL] || keyboard_state[SDL_SCANCODE_RCTRL]) {
+      else if(keyboard_state[SDL_SCANCODE_RIGHT])
+      {
+        if(keyboard_state[SDL_SCANCODE_LCTRL] ||
+           keyboard_state[SDL_SCANCODE_RCTRL])
+        {
           _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
         }
-        else {
+        else
+        {
           _buffer.execute_command(Command::MOVE_CURSOR_FORWARD);
         }
       }
-      else {
-//        TODO
+      else
+      {
+        //        TODO
       }
     }
+
+    float height_ratio = static_cast<float>(_height) /
+                         static_cast<float>(_buffer.size() * _character_height);
+    _scrollbar_height =
+      static_cast<int>(height_ratio * static_cast<float>(_height));
+    _scrollbar_y =
+      static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
     return Ok(true);
   }
   case SDL_MOUSEWHEEL: {
@@ -380,7 +465,7 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 #ifdef DEBUG
       log_info("Scrolling down, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y += abs(event.wheel.y)*_character_height;
+      _scroll_offset_y += abs(event.wheel.y) * _character_height;
       if(_scroll_offset_y > 0)
       {
         _scroll_offset_y = 0;
@@ -392,17 +477,23 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
 #ifdef DEBUG
       log_info("Scrolling up, y: %d", event.wheel.y);
 #endif
-      _scroll_offset_y -= abs(event.wheel.y)*_character_height;
+      _scroll_offset_y -= abs(event.wheel.y) * _character_height;
       int buffer_height = (int)(_character_height * _buffer.size());
-//      if(_scroll_offset_y * _character_height <= -buffer_height + _height)
-//      {
-//        _scroll_offset_y = -buffer_height / _character_height +
-//                           (_height / _character_height) + 1;
-//      }
-      if (_scroll_offset_y-_height<-buffer_height) {
-        _scroll_offset_y = -buffer_height+_height;
+      //      if(_scroll_offset_y * _character_height <= -buffer_height + _height)
+      //      {
+      //        _scroll_offset_y = -buffer_height / _character_height +
+      //                           (_height / _character_height) + 1;
+      //      }
+      if(_scroll_offset_y - _height < -buffer_height)
+      {
+        _scroll_offset_y = -buffer_height + _height;
       }
     }
+
+    float height_ratio = static_cast<float>(_height) /
+                         static_cast<float>(_buffer.size() * _character_height);
+    _scrollbar_y =
+      static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
     return Ok(true);
   }
   }
@@ -415,7 +506,7 @@ Result<bool, std::string> EditorView::render() const
 
   //  TODO: Shift functionality for drawing lines over here from DirectRender::render_line_view()
 
-//  int painter_x = _x, painter_y = _y + _character_height * _scroll_offset_y;
+  //  int painter_x = _x, painter_y = _y + _character_height * _scroll_offset_y;
   int painter_x = _x, painter_y = _y + _scroll_offset_y;
   unsigned int buffer_line_to_render = 0;
   while(painter_y < 0 && abs(painter_y) >= _character_height &&
@@ -459,7 +550,9 @@ Result<bool, std::string> EditorView::render() const
     (static_cast<int>(max_line_number_str.length()) + _scroll_offset_x +
      cursor_coords.second + 1) *
       _character_width,
-    (_scroll_offset_y/_character_height + cursor_coords.first) * _character_height + _scroll_offset_y%_character_height,
+    (_scroll_offset_y / _character_height + cursor_coords.first) *
+        _character_height +
+      _scroll_offset_y % _character_height,
     2,
     _character_height,
     _foreground);
@@ -469,35 +562,24 @@ Result<bool, std::string> EditorView::render() const
   }
 
   //  Drawing scrollbar
-  float height_ratio = static_cast<float>(_height) /
-                       static_cast<float>(_buffer.size() * _character_height);
-  int scrollbar_height =
-    static_cast<int>(height_ratio * static_cast<float>(_height));
-  int scrollbar_y =
-    static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
-  //  _ = DirectRender::render_filled_semicircle(
-  //    _x + _width - 8,
-  //    _y + 5,
-  //    5,
-  //    {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
-  //  if (_.error()) {
-  //    return _;
-  //  }
+//  float height_ratio = static_cast<float>(_height) /
+//                       static_cast<float>(_buffer.size() * _character_height);
+//  int scrollbar_height =
+//    static_cast<int>(height_ratio * static_cast<float>(_height));
+//  int scrollbar_y =
+//    static_cast<int>(static_cast<float>(-_scroll_offset_y) * height_ratio);
   _ = DirectRender::render_filled_rectangle(
     _x + _width - _scrollbar_width - _scrollbar_offset,
-    scrollbar_y,
+    _scrollbar_y,
     10,
-    scrollbar_height,
+    _scrollbar_height,
     {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
   if(_.error())
   {
     return _;
   }
-  //  _ = DirectRender::render_filled_inverted_semicircle(_x+_width-7, _y+5+100, 5, {.r = _foreground.r, .g = _foreground.g, .b = _foreground.b, .a = 100});
-  //  if (_.error()) {
-  //    return _;
-  //  }
-  //  SingletonRenderer::get_instance()->remove_clip_rect();
+
+  SingletonRenderer::get_instance()->remove_clip_rect();
 
   return Ok(true);
 }
@@ -505,4 +587,11 @@ Result<bool, std::string> EditorView::render() const
 bool EditorView::point_lies_inside(const int& x, const int& y) const
 {
   return _x <= x && x <= (_x + _width) && _y <= y && y <= (_y + _height);
+}
+
+bool EditorView::point_lies_inside_scrollbar(const int& x, const int& y) const
+{
+  return (_x + _width - _scrollbar_width - _scrollbar_offset <= x) &&
+         (x <= _x + _width - _scrollbar_offset) && (_y + _scrollbar_y <= y) &&
+         (y <= _y + _scrollbar_y + _scrollbar_height);
 }

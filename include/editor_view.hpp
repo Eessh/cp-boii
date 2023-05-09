@@ -72,7 +72,9 @@ private:
     _line_number_foreground, _line_number_background,
     _line_number_active_foreground, _line_number_active_background;
   int _scroll_offset_x, _scroll_offset_y;
-  int _scrollbar_width, _scrollbar_offset;
+  int _scrollbar_width, _scrollbar_offset, _scrollbar_y, _scrollbar_height;
+  bool _scrollbar_active;
+  int _scrollbar_active_instance_x, _scrollbar_active_instance_y;
   float _animation_scroll_offset_x, _animation_scroll_offset_y;
   bool _animation_happening;
   VectorBuffer _buffer;
@@ -80,6 +82,8 @@ private:
   int _character_width, _character_height;
 
   [[nodiscard]] bool point_lies_inside(const int& x, const int& y) const;
+  [[nodiscard]] bool point_lies_inside_scrollbar(const int& x,
+                                                 const int& y) const;
 };
 
 #endif //CP_BOII_EDITOR_VIEW_HPP
