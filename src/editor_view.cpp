@@ -21,6 +21,8 @@ EditorView::EditorView()
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _scrollbar_width(10)
+  , _scrollbar_offset(2)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -46,6 +48,8 @@ EditorView::EditorView(const std::string& text)
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _scrollbar_width(10)
+  , _scrollbar_offset(2)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -71,6 +75,8 @@ EditorView::EditorView(const std::vector<std::string>& buffer)
   , _line_number_active_background({0, 0, 0, 0})
   , _scroll_offset_x(0)
   , _scroll_offset_y(0)
+  , _scrollbar_width(10)
+  , _scrollbar_offset(2)
   , _animation_scroll_offset_x(0.0f)
   , _animation_scroll_offset_y(0.0f)
   , _animation_happening(false)
@@ -305,15 +311,10 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
     return Ok(true);
   }
   case SDL_KEYDOWN: {
-    if(event.key.keysym.sym == SDLK_LEFT)
-    {
-      _buffer.execute_command(Command::MOVE_CURSOR_BACK);
-    }
-    else if(event.key.keysym.sym == SDLK_RIGHT)
-    {
-      _buffer.execute_command(Command::MOVE_CURSOR_FORWARD);
-    }
-    else if(event.key.keysym.sym == SDLK_UP)
+#ifdef DEBUG
+    log_debug("Key code: %d, scancode: %d, name: %s", event.key.keysym.sym, event.key.keysym.scancode, SDL_GetKeyName(event.key.keysym.sym));
+#endif
+    if(event.key.keysym.sym == SDLK_UP)
     {
       _buffer.execute_command(Command::MOVE_CURSOR_UP);
       std::pair<int, int> cursor_coords =
@@ -342,17 +343,29 @@ Result<bool, std::string> EditorView::process_sdl_event(const SDL_Event& event)
         _scroll_offset_y = -cursor_coords.first;
       }
     }
-    else if(event.key.keysym.sym == SDLK_HOME)
-    {
-      _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
-    }
-    else if(event.key.keysym.sym == SDLK_END)
-    {
-      _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
-    }
     else
     {
       //      TODO: handle dis
+      const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
+      if (keyboard_state[SDL_SCANCODE_LEFT]) {
+        if (keyboard_state[SDL_SCANCODE_LCTRL] || keyboard_state[SDL_SCANCODE_RCTRL]) {
+          _buffer.execute_command(Command::MOVE_CURSOR_TO_HOME);
+        }
+        else {
+          _buffer.execute_command(Command::MOVE_CURSOR_BACK);
+        }
+      }
+      else if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+        if (keyboard_state[SDL_SCANCODE_LCTRL] || keyboard_state[SDL_SCANCODE_RCTRL]) {
+          _buffer.execute_command(Command::MOVE_CURSOR_TO_END);
+        }
+        else {
+          _buffer.execute_command(Command::MOVE_CURSOR_FORWARD);
+        }
+      }
+      else {
+//        TODO
+      }
     }
     return Ok(true);
   }
@@ -468,7 +481,7 @@ Result<bool, std::string> EditorView::render() const
   //    return _;
   //  }
   _ = DirectRender::render_filled_rectangle(
-    _x + _width - 12,
+    _x + _width - _scrollbar_width - _scrollbar_offset,
     scrollbar_y,
     10,
     scrollbar_height,

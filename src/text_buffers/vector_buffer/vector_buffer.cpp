@@ -30,6 +30,16 @@ Result<const std::string&, std::string> VectorBuffer::get_line(const unsigned in
   return Ok<const std::string&>(_buffer[line_number]);
 }
 
+bool VectorBuffer::has_selection() const
+{
+  return _has_selection;
+}
+
+const std::pair<std::pair<int, int>, std::pair<int, int>>& VectorBuffer::get_selection() const
+{
+  return _selection;
+}
+
 std::string VectorBuffer::get_line_unsafe(const unsigned int& line_number) const
 {
   return _buffer[line_number];
@@ -48,6 +58,24 @@ Result<bool, std::string> VectorBuffer::set_cursor_coords(const int& row, const 
 {
   _cursor_row = row;
   _cursor_col = column;
+  return Ok(true);
+}
+
+Result<bool, std::string> VectorBuffer::set_selection(const std::pair<std::pair<int, int>, std::pair<int, int>>& selection)
+{
+  if (selection.first.first < 0 || selection.first.first > static_cast<int>(_buffer.size())) {
+    return Error<std::string>("Selection starting point row is out of bounds!");
+  }
+  if (selection.second.first < 0 || selection.second.first > static_cast<int>(_buffer.size())) {
+    return Error<std::string>("Selection ending point row is out of bounds!");
+  }
+  if (selection.first.second < 0 || selection.first.second >= static_cast<int>(_buffer[selection.first.first].size())) {
+    return Error<std::string>("Selection starting point column is out of bounds!");
+  }
+  if (selection.second.second < 0 || selection.second.second >= static_cast<int>(_buffer[selection.second.first].size())) {
+    return Error<std::string>("Selection ending point column is out of bounds!");
+  }
+  _selection = selection;
   return Ok(true);
 }
 
@@ -213,5 +241,12 @@ void VectorBuffer::execute_command(const Command& command, const std::string& in
   default: {
     break;
   }
+  }
+}
+
+void VectorBuffer::move_cursor_to_word_ending()
+{
+  if (_cursor_col == -1) {
+//    TODO
   }
 }

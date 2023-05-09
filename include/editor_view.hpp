@@ -72,6 +72,7 @@ private:
     _line_number_foreground, _line_number_background,
     _line_number_active_foreground, _line_number_active_background;
   int _scroll_offset_x, _scroll_offset_y;
+  int _scrollbar_width, _scrollbar_offset;
   float _animation_scroll_offset_x, _animation_scroll_offset_y;
   bool _animation_happening;
   VectorBuffer _buffer;

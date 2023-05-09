@@ -19,12 +19,15 @@ class VectorBuffer {
   // Getters
   [[nodiscard]] Result<std::pair<int, int>, std::string> get_cursor_coords() const;
   [[nodiscard]] Result<const std::string&, std::string> get_line(const unsigned int& line_number) const;
+  [[nodiscard]] bool has_selection() const;
+  [[nodiscard]] const std::pair<std::pair<int, int>, std::pair<int, int>>& get_selection() const;
   [[nodiscard]] std::string get_line_unsafe(const unsigned int& line_number) const;
   [[nodiscard]] Result<const std::vector<std::string>&, std::string> get_buffer() const;
   [[nodiscard]] int size() const;
 
 //  Setters
   Result<bool, std::string> set_cursor_coords(const int& row, const int& column);
+  Result<bool, std::string> set_selection(const std::pair<std::pair<int, int>, std::pair<int, int>>& selection);
 
   // Buffer Mutators
   [[nodiscard]] Result<bool, std::string> insert_char(const char& character);
@@ -32,10 +35,13 @@ class VectorBuffer {
 
   // Command Processors
   void execute_command(const Command& command, const std::string& insert_str = "");
+  void move_cursor_to_word_ending();
 
   private:
   int _cursor_row;
   int _cursor_col;
+  bool _has_selection;
+  std::pair<std::pair<int, int>, std::pair<int, int>> _selection;
   std::vector<std::string> _buffer;
 };
 
